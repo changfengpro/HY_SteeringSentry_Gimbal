@@ -10,6 +10,8 @@
 
 // static servo_instance *lid; 需要增加弹舱盖
 
+#define DETECTION_MAX_OUTPUT 2700.0f
+
 extern Shoot_Ctrl_Cmd_s shoot_cmd_send;      // 传递给发射的控制信息
 static ShootInstance shoot_l, shoot_r; // 左右发射机构实例
 static Publisher_t *shoot_pub;
@@ -21,6 +23,8 @@ static int count[2] = {0, 0};       //用于堵转计数
 static int enter_count[2]; //用于进入计数
 // dwt定时,计算冷却用
 static float hibernate_time = 0, dead_time = 0;
+static float detection_start = 0; // 用于检测是否进入堵转状态
+static float detection_dt = 0; 
 
 void ShootInit()
 {
@@ -113,13 +117,13 @@ void ShootInit()
         .controller_param_init_config = {
             .angle_PID = {
                 // 如果启用位置环来控制发弹,需要较大的I值保证输出力矩的线性度否则出现接近拨出的力矩大幅下降
-                .Kp = 30, // 10
-                .Ki = 0,
+                .Kp = 50, // 10
+                .Ki = 10,
                 .Kd = 0,
                 .MaxOut = 200,
             },
             .speed_PID = {
-                .Kp = 15, // 10
+                .Kp = 20, // 10
                 .Ki = 1, // 1
                 .Kd = 0,
                 .Improve = PID_Integral_Limit,
@@ -222,7 +226,7 @@ void ShootTask()
             {
                 DJIMotorOuterLoop(shoot_l.loader, ANGLE_LOOP);                                              // 切换到角度环
                 DJIMotorSetRef(shoot_l.loader, -(shoot_l.loader->measure.total_angle + ONE_BULLET_DELTA_ANGLE)); // 控制量减少一发弹丸的角度
-                if(enter_count[0] == 20)
+                if(enter_count[0] == 80)
                 {
                     shoot_l.stall_flag = 0;
                     enter_count[0] = 0;
@@ -234,7 +238,7 @@ void ShootTask()
             {
                 DJIMotorOuterLoop(shoot_r.loader, ANGLE_LOOP);
                 DJIMotorSetRef(shoot_r.loader, -(shoot_r.loader->measure.total_angle + ONE_BULLET_DELTA_ANGLE)); // 控制量减少一发弹丸的角度
-                if(enter_count[1] == 20)
+                if(enter_count[1] == 80)
                 {
                     shoot_r.stall_flag = 0;
                     enter_count[1] = 0;
@@ -289,8 +293,8 @@ void ShootTask()
             DJIMotorSetRef(shoot_r.friction_r, 0);
             break;
         default: // 当前为了调试设定的默认值4000,因为还没有加入裁判系统无法读取弹速.
-            DJIMotorSetRef(shoot_l.friction_l, 50000);
-            DJIMotorSetRef(shoot_l.friction_r, 50000);
+            DJIMotorSetRef(shoot_l.friction_l, 30000);
+            DJIMotorSetRef(shoot_l.friction_r, 30000);
             break;
         }
     }
@@ -318,8 +322,9 @@ void ShootTask()
 
 void LoaderStallDetection()
 {   
-    output[0] = shoot_l.loader->motor_controller.speed_PID.Output;
-    output[1] = shoot_r.loader->motor_controller.speed_PID.Output;
+    detection_start = DWT_GetTimeline_ms();
+    output[0] = shoot_l.loader->measure.real_current;
+    output[1] = shoot_r.loader->measure.real_current;
 
     if(count[0] <= 0 || count[1] <= 0)
     {
@@ -327,19 +332,19 @@ void LoaderStallDetection()
         if(count[1] < 0)    count[1]++;
     }
 
-    if(output[0] >=5000 || output[1] >=5000)
+    if(output[0] >= DETECTION_MAX_OUTPUT || output[1] >= DETECTION_MAX_OUTPUT)
     {
-        if(output[0] >= 5000)    count[0]++;
-        if(output[1] >= 5000)    count[1]++;
+        if(output[0] >= DETECTION_MAX_OUTPUT)    count[0]++;
+        if(output[1] >= DETECTION_MAX_OUTPUT)    count[1]++;
     }
-    if(count[0]== 400 || count[1]== 400)
+    if(count[0]== 100 || count[1]== 100 && (output[0] == DETECTION_MAX_OUTPUT || output[1] == DETECTION_MAX_OUTPUT))
     {
-        if(count[0] == 400)
+        if(count[0] == 100)
         {
             shoot_l.stall_flag = 1;
             count[0] = -50;
         }
-        if(count[1] == 400)
+        if(count[1] == 100)
         {
             shoot_r.stall_flag = 1;
             count[1] = -50;

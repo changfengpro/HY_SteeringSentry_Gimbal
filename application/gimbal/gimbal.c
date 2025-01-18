@@ -7,8 +7,10 @@
 #include "bmi088.h"
 
 
-#define YAW_INIT_ANGLE -140.0f // 云台初始角度
-#define PITCH_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
+#define YAW_L_INIT_ANGLE -140.0f // 云台初始角度
+#define PITCH_L_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
+#define YAW_R_INIT_ANGLE -30.0f // 云台初始角度
+#define PITCH_R_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
 #define YAW_COEFF_REMOTE 0.036363636f //云台遥控系数
 #define PITCH_COEFF_REMOTE 0.134848485f //云台俯仰遥控系数
 
@@ -32,7 +34,7 @@ void GimbalInit()
         },
         .controller_param_init_config = {
             .angle_PID = {
-                .Kp = 8, // 8
+                .Kp = 50, // YL:8  Me:50
                 .Ki = 0,
                 .Kd = 0,
                 .DeadBand = 0.1,
@@ -69,7 +71,7 @@ void GimbalInit()
         },
         .controller_param_init_config = {
             .angle_PID = {
-                .Kp = 20, // 30
+                .Kp = 50, // YL:30  Me:50
                 .Ki = 0,
                 .Kd = 0,
                 .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
@@ -124,7 +126,7 @@ void GimbalTask()
     // 后续增加未收到数据的处理
     SubGetMessage(gimbal_sub, &gimbal_cmd_recv);
 
-    float pitch_angle = -gimbal_cmd_recv.pitch + PITCH_INIT_ANGLE; // 云台当前角度
+    float pitch_r_angle = -gimbal_cmd_recv.pitch + PITCH_R_INIT_ANGLE; // 云台当前角度
 
     // @todo:现在已不再需要电机反馈,实际上可以始终使用IMU的姿态数据来作为云台的反馈,yaw电机的offset只是用来跟随底盘
     // 根据控制模式进行电机反馈切换和过渡,视觉模式在robot_cmd模块就已经设置好,gimbal只看yaw_ref和pitch_ref
@@ -154,8 +156,8 @@ void GimbalTask()
         DJIMotorChangeFeed(yaw_r_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, MOTOR_FEED);
-        DJIMotorSetRef(yaw_l_motor, -gimbal_cmd_recv.yaw + YAW_INIT_ANGLE); // yaw和pitch会在robot_cmd中处理好多圈和单圈
-        DJIMotorSetRef(pitch_l_motor, pitch_angle);
+        DJIMotorSetRef(yaw_l_motor, -gimbal_cmd_recv.yaw + YAW_R_INIT_ANGLE); // yaw和pitch会在robot_cmd中处理好多圈和单圈
+        DJIMotorSetRef(pitch_l_motor, pitch_r_angle);
         break;
     default:
         break;
