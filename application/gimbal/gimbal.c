@@ -9,7 +9,7 @@
 
 #define YAW_L_INIT_ANGLE -140.0f // 云台初始角度
 #define PITCH_L_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
-#define YAW_R_INIT_ANGLE -30.0f // 云台初始角度
+#define YAW_R_INIT_ANGLE -150.0f // 云台初始角度
 #define PITCH_R_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
 #define YAW_COEFF_REMOTE 0.036363636f //云台遥控系数
 #define PITCH_COEFF_REMOTE 0.134848485f //云台俯仰遥控系数
