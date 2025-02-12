@@ -5,7 +5,7 @@
  * @version: 
  * @Date: 2025-02-01 20:34:56
  * @LastEditors:  
- * @LastEditTime: 2025-02-05 17:15:06
+ * @LastEditTime: 2025-02-12 13:30:05
  */
 
 #include "cmd_vel.h"
@@ -17,6 +17,7 @@
 
 static Radar_Data radar_ctrl;
 static uint8_t cmd_vel_init_flag;
+static uint8_t low_contr[CMD_VEL_CONTROL_FRAME_SIZE];
 
 static USARTInstance *cmd_vel_usart_instance;   //导航串口实例
 static DaemonInstance *cmd_vel_daemo_instance;  //导航守护进程实例
@@ -44,13 +45,17 @@ static void Cmd_vel_Parse(const uint8_t *cmd_vel_buf)
     
     if(checksum == cmd_vel_buf[25]) // 校验正确
     {
-        // 解析数据
+        // 解析数据改为在sentry_chassis项目，gimal只作转发
         memcpy(&radar_ctrl.linear.x, &cmd_vel_buf[1], sizeof(float));
         memcpy(&radar_ctrl.linear.y, &cmd_vel_buf[5], sizeof(float));
         memcpy(&radar_ctrl.linear.z, &cmd_vel_buf[9], sizeof(float));
         memcpy(&radar_ctrl.angular.x, &cmd_vel_buf[13], sizeof(float));
         memcpy(&radar_ctrl.angular.y, &cmd_vel_buf[17], sizeof(float));
         memcpy(&radar_ctrl.angular.z, &cmd_vel_buf[21], sizeof(float));
+
+        memcpy(&low_contr, cmd_vel_buf, 27);
+        HAL_UART_Transmit_DMA(&huart1, low_contr, CMD_VEL_CONTROL_FRAME_SIZE);
+
 
         LOGINFO("[cmd_vel] Parsed data: Linear x: %.6f, Linear y: %.6f, Linear z: %.6f, "
                 "Angular x: %.6f, Angular y: %.6f, Angular z: %.6f",
@@ -106,7 +111,7 @@ Radar_Data *CmdVelControlInit(UART_HandleTypeDef *cmd_vel_usart_handle)
         .callback = CmdVelLostCallback,
         .owner_id = NULL,   //只有一个cmd_vel不需要id
     };
-    cmd_vel_daemo_instance = DaemonRegister(&daemo_conf);
+    // cmd_vel_daemo_instance = DaemonRegister(&daemo_conf);
     cmd_vel_init_flag = 1;
 
     return &radar_ctrl;
@@ -123,6 +128,9 @@ uint8_t CmdVelControlIsOnline()
     return 0;
 }
 
-
+/**
+ * @brief
+ * @return 
+ */
 
 

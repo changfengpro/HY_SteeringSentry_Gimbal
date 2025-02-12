@@ -15,6 +15,19 @@
         "bsp_log.h": "c",
         "shoot.h": "c",
         "message_center.h": "c",
-        "robot_def.h": "c"
+        "robot_def.h": "c",
+        "cmd_vel.h": "c",
+        "bit": "c",
+        "compare": "c",
+        "cstddef": "c",
+        "string": "c",
+        "limits": "c",
+        "memory": "c",
+        "new": "c",
+        "functional": "c",
+        "bsp_usart.h": "c",
+        "stdlib.h": "c",
+        "bsp_dwt.h": "c",
+        "stdint.h": "c"
     }
 }
