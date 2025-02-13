@@ -10,6 +10,8 @@
  */
 #include "master_process.h"
 #include "seasky_protocol.h"
+#include "rv2_protocal.h"
+#include "rv2_trajectory.h"
 #include "daemon.h"
 #include "bsp_log.h"
 #include "robot_def.h"

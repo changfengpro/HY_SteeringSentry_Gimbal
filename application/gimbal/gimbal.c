@@ -7,9 +7,9 @@
 #include "bmi088.h"
 
 
-#define YAW_L_INIT_ANGLE -140.0f // 云台初始角度
+#define YAW_L_INIT_ANGLE -150.0f // 云台初始角度
 #define PITCH_L_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
-#define YAW_R_INIT_ANGLE -150.0f // 云台初始角度
+#define YAW_R_INIT_ANGLE -30.0f // 云台初始角度
 #define PITCH_R_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
 #define YAW_COEFF_REMOTE 0.036363636f //云台遥控系数
 #define PITCH_COEFF_REMOTE 0.134848485f //云台俯仰遥控系数
@@ -136,6 +136,9 @@ void GimbalTask()
     case GIMBAL_ZERO_FORCE:
         DJIMotorStop(yaw_l_motor);
         DJIMotorStop(pitch_l_motor);
+        DJIMotorStop(yaw_r_motor);
+        DJIMotorStop(pitch_r_motor);
+        
         break;
     // 使用陀螺仪的反馈,底盘根据yaw电机的offset跟随云台或视觉模式采用
     case GIMBAL_GYRO_MODE: // 后续只保留此模式
@@ -145,19 +148,23 @@ void GimbalTask()
         DJIMotorChangeFeed(yaw_r_motor, ANGLE_LOOP, OTHER_FEED);
         DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, OTHER_FEED);
         DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, OTHER_FEED);
-        DJIMotorSetRef(yaw_l_motor, gimbal_cmd_recv.yaw); // yaw和pitch会在robot_cmd中处理好多圈和单圈
-        DJIMotorSetRef(pitch_l_motor, gimbal_cmd_recv.pitch);
+        // DJIMotorSetRef(yaw_l_motor, gimbal_cmd_recv.yaw); // yaw和pitch会在robot_cmd中处理好多圈和单圈
+        // DJIMotorSetRef(pitch_l_motor, gimbal_cmd_recv.pitch);
         break;
     // 云台自由模式,使用编码器反馈,底盘和云台分离,仅云台旋转,一般用于调整云台姿态(英雄吊射等)/能量机关
     case GIMBAL_FREE_MODE: // 后续删除,或加入云台追地盘的跟随模式(响应速度更快)
         DJIMotorEnable(yaw_l_motor);
         DJIMotorEnable(pitch_l_motor);
+        DJIMotorEnable(yaw_r_motor);
+        DJIMotorEnable(pitch_r_motor);
         DJIMotorChangeFeed(yaw_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(yaw_r_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, MOTOR_FEED);
-        DJIMotorSetRef(yaw_l_motor, -gimbal_cmd_recv.yaw + YAW_R_INIT_ANGLE); // yaw和pitch会在robot_cmd中处理好多圈和单圈
-        DJIMotorSetRef(pitch_l_motor, pitch_r_angle);
+        // DJIMotorSetRef(yaw_l_motor, -gimbal_cmd_recv.yaw + YAW_L_INIT_ANGLE); // yaw和pitch会在robot_cmd中处理好多圈和单圈
+        // DJIMotorSetRef(pitch_l_motor, pitch_r_angle);
+        DJIMotorSetRef(yaw_r_motor, -gimbal_cmd_recv.yaw + YAW_R_INIT_ANGLE);
+        DJIMotorSetRef(pitch_r_motor, pitch_r_angle);
         break;
     default:
         break;
