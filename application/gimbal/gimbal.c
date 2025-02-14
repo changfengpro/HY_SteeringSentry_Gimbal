@@ -21,11 +21,14 @@ static Publisher_t *gimbal_pub;                   // 云台应用消息发布者
 static Subscriber_t *gimbal_sub;                  // cmd控制消息订阅者
 static Gimbal_Upload_Data_s gimbal_feedback_data; // 回传给cmd的云台状态信息
 static Gimbal_Ctrl_Cmd_s gimbal_cmd_recv;         // 来自cmd的控制信息
+static Vision_Gimbal_Data_s vision_gimbal_data; // 自瞄时云台数据(为方便计算，定义了相对角度)
 
 // static BMI088Instance *bmi088; // 云台IMU
+
+
 void GimbalInit()
 {   
-    // gimba_IMU_data = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源
+    gimba_IMU_data = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源
     // YAW
     Motor_Init_Config_s yaw_config = {
         .can_init_config = {
@@ -117,6 +120,29 @@ void GimbalInit()
     gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
 }
 
+/**
+ * @brief 计算相对母云台的角度，供于自瞄计算
+ */
+static void RelaYawCalc()
+{
+    vision_gimbal_data.gimbal_rela.r_yaw = yaw_r_motor->measure.total_angle - YAW_R_INIT_ANGLE;
+    vision_gimbal_data.gimbal_rela.r_single_yaw = fmodf(vision_gimbal_data.gimbal_rela.r_yaw, 360.0);
+
+    // if(vision_gimbal_data.gimbal_rela.r_single_yaw < 0) vision_gimbal_data.gimbal_rela.r_single_yaw += 360.0;
+}
+
+/**
+ * @brief 实际角度计算
+ */
+static void VisionSetCalc()
+{   
+    if(yaw_r_motor->measure.total_round < 0)
+    vision_gimbal_data.Vision_r_yaw = (yaw_r_motor->measure.total_round + 1) * 360.0 + vision_gimbal_data.gimbal_rela.r_single_yaw + gimba_IMU_data->Yaw + YAW_R_INIT_ANGLE;
+    else vision_gimbal_data.Vision_r_yaw = yaw_r_motor->measure.total_round  * 360.0 + vision_gimbal_data.gimbal_rela.r_single_yaw + gimba_IMU_data->Yaw +YAW_R_INIT_ANGLE;
+
+    vision_gimbal_data.Vision_set_l_yaw = vision_gimbal_data.Vision_r_yaw + gimbal_cmd_recv.yaw;
+
+}
 
 
 /* 机器人云台控制核心任务,后续考虑只保留IMU控制,不再需要电机的反馈 */
@@ -126,7 +152,10 @@ void GimbalTask()
     // 后续增加未收到数据的处理
     SubGetMessage(gimbal_sub, &gimbal_cmd_recv);
 
-    float pitch_r_angle = -gimbal_cmd_recv.pitch + PITCH_R_INIT_ANGLE; // 云台当前角度
+    float pitch_r_angle = -gimbal_cmd_recv.pitch + PITCH_R_INIT_ANGLE; // 子云台当前角度    
+
+    RelaYawCalc();
+    VisionSetCalc();
 
     // @todo:现在已不再需要电机反馈,实际上可以始终使用IMU的姿态数据来作为云台的反馈,yaw电机的offset只是用来跟随底盘
     // 根据控制模式进行电机反馈切换和过渡,视觉模式在robot_cmd模块就已经设置好,gimbal只看yaw_ref和pitch_ref
@@ -166,6 +195,18 @@ void GimbalTask()
         DJIMotorSetRef(yaw_r_motor, -gimbal_cmd_recv.yaw + YAW_R_INIT_ANGLE);
         DJIMotorSetRef(pitch_r_motor, pitch_r_angle);
         break;
+    // 云台自瞄模式，自瞄计算使用相对母云台角度，发送时转换为实际角度
+    case GIMBAL_VISION: 
+        DJIMotorEnable(yaw_l_motor);
+        DJIMotorEnable(pitch_l_motor);
+        DJIMotorEnable(yaw_r_motor);
+        DJIMotorEnable(pitch_r_motor);
+        DJIMotorChangeFeed(yaw_l_motor, ANGLE_LOOP, MOTOR_FEED);
+        DJIMotorChangeFeed(yaw_r_motor, ANGLE_LOOP, MOTOR_FEED);
+        DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, MOTOR_FEED);
+        DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, MOTOR_FEED);
+        DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw);
+
     default:
         break;
     }

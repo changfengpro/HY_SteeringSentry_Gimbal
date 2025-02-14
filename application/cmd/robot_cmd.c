@@ -132,6 +132,9 @@ static void RemoteControlSet()
     if (switch_is_mid(rc_data[TEMP].rc.switch_left)) // 左侧开关状态为[中],视觉模式
     {
         // 待添加,视觉会发来和目标的误差,同样将其转化为total angle的增量进行控制
+        gimbal_cmd_send.gimbal_mode = GIMBAL_VISION;    //云台自瞄模式
+        gimbal_cmd_send.yaw = vision_recv_data->yaw;
+        gimbal_cmd_send.pitch = vision_recv_data->pitch;
         // ...
     }
     // 左侧开关状态为[下],或视觉未识别到目标,纯遥控器拨杆控制
@@ -168,16 +171,16 @@ static void RemoteControlSet()
     shoot_cmd_send.shoot_rate = 10;
 }
 
-/**
- * @brief 控制输入为导航和视觉的模式和控制量设置
- *
- */
-static void VisionRadaControlSet()
-{
-    gimbal_cmd_send.gimbal_mode = GIMBAL_FREE_MODE;
-    gimbal_cmd_send.yaw = vision_recv_data->yaw;
-    gimbal_cmd_send.pitch = vision_recv_data->pitch;
-}
+// /**
+//  * @brief 控制输入为导航和视觉的模式和控制量设置
+//  *
+//  */
+// static void VisionRadaControlSet()
+// {
+//     gimbal_cmd_send.gimbal_mode = GIMBAL_FREE_MODE;
+//     gimbal_cmd_send.yaw = vision_recv_data->yaw;
+//     gimbal_cmd_send.pitch = vision_recv_data->pitch;
+// }
 
 /**
  * @brief 输入为键鼠时模式和控制量设置

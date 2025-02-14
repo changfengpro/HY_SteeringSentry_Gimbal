@@ -79,6 +79,8 @@ modules/imu/BMI088Middleware.c \
 modules/imu/ins_task.c \
 modules/master_machine/master_process.c \
 modules/master_machine/seasky_protocol.c \
+modules/master_machine/rv2_protocal.c \
+modules/master_machine/rv2_trajectory.c \
 modules/motor/DJImotor/dji_motor.c \
 modules/motor/HTmotor/HT04.c \
 modules/motor/LKmotor/LK9025.c \

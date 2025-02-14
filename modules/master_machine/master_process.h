@@ -16,9 +16,14 @@ typedef enum
 } Fire_Mode_e;
 
 typedef enum
-{
-	NO_TARGET = 0,
-	TARGET_CONVERGING = 1,
+{	//默认状态
+	// NO_TARGET = 0,
+	// TRACKING = 1,
+
+	//调试状态
+	NO_TARGET = 1,
+	TRACKING = 0,
+
 	READY_TO_FIRE = 2
 } Target_State_e;
 
@@ -43,6 +48,8 @@ typedef struct
 
 	float pitch;
 	float yaw;
+
+	uint8_t offline;
 } Vision_Recv_s;
 
 typedef enum
@@ -78,6 +85,10 @@ typedef struct
 	float yaw;
 	float pitch;
 	float roll;
+
+	float aim_x;
+	float aim_y;
+	float aim_z;
 } Vision_Send_s;
 #pragma pack()
 
