@@ -27,5 +27,5 @@ uint8_t *USBInit(USB_Init_Config_s usb_conf)
 
 void USBTransmit(uint8_t *buffer, uint16_t len)
 {
-    CDC_Transmit_FS(buffer, len); // 发送
+    CDC_Transmit_HS(buffer, len); // 发送
 }

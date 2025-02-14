@@ -19,6 +19,7 @@
 #include "user_lib.h"
 #include "general_def.h"
 #include "master_process.h"
+#include "arm_math.h"
 
 static INS_t INS;
 static IMU_Param_t IMU_Param;
@@ -37,7 +38,7 @@ static void IMU_Param_Correction(IMU_Param_t *param, float gyro[3], float accel[
 
 static void IMUPWMSet(uint16_t pwm)
 {
-    __HAL_TIM_SetCompare(&htim10, TIM_CHANNEL_1, pwm);
+    __HAL_TIM_SetCompare(&htim3, TIM_CHANNEL_4, pwm);
 }
 
 /**
@@ -84,15 +85,15 @@ attitude_t *INS_Init(void)
     else
         return (attitude_t *)&INS.Gyro;
 
-    HAL_TIM_PWM_Start(&htim10, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
 
-    while (BMI088Init(&hspi1, 1) != BMI088_NO_ERROR)
+    while (BMI088Init(&hspi2, 1) != BMI088_NO_ERROR)
         ;
     IMU_Param.scale[X] = 1;
     IMU_Param.scale[Y] = 1;
     IMU_Param.scale[Z] = 1;
     IMU_Param.Yaw = 0;
-    IMU_Param.Pitch = 0;
+    IMU_Param.Pitch = 53.0f;
     IMU_Param.Roll = 0;
     IMU_Param.flag = 1;
 
@@ -100,11 +101,11 @@ attitude_t *INS_Init(void)
     InitQuaternion(init_quaternion);
     IMU_QuaternionEKF_Init(init_quaternion, 10, 0.001, 1000000, 1, 0);
     // imu heat init
-    PID_Init_Config_s config = {.MaxOut = 2000,
-                                .IntegralLimit = 300,
+    PID_Init_Config_s config = {.MaxOut = 1,
+                                .IntegralLimit = 80,
                                 .DeadBand = 0,
-                                .Kp = 1000,
-                                .Ki = 20,
+                                .Kp = 400,
+                                .Ki = 5,
                                 .Kd = 0,
                                 .Improve = 0x01}; // enable integratiaon limit
     PIDInit(&TempCtrl, &config);

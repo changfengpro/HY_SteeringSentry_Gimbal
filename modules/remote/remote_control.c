@@ -124,6 +124,7 @@ RC_ctrl_t *RemoteControlInit(UART_HandleTypeDef *rc_usart_handle)
     };
     rc_daemon_instance = DaemonRegister(&daemon_conf);
 
+
     rc_init_flag = 1;
     return rc_ctrl;
 }

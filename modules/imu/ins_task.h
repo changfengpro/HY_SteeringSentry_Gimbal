@@ -19,9 +19,9 @@
 #include "BMI088driver.h"
 #include "QuaternionEKF.h"
 
-#define X 0
-#define Y 1
-#define Z 2
+#define X 1
+#define Y 2
+#define Z 0
 
 #define INS_TASK_PERIOD 1
 

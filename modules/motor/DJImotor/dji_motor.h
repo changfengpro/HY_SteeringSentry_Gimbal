@@ -37,6 +37,7 @@ typedef struct
     float speed_aps;          // 角速度,单位为:度/秒
     int16_t real_current;     // 实际电流
     uint8_t temperature;      // 温度 Celsius
+    float speed_rpm;
 
     float total_angle;   // 总角度,注意方向
     int32_t total_round; // 总圈数,注意方向
@@ -126,5 +127,15 @@ void DJIMotorEnable(DJIMotorInstance *motor);
  * @param outer_loop 外层闭环类型
  */
 void DJIMotorOuterLoop(DJIMotorInstance *motor, Closeloop_Type_e outer_loop);
+
+
+/**
+ * @brief 设置DJI电机功率限制后的输出值
+ *        
+ *
+ * @param motor 要设置的电机
+ * @param output_limit 设定值
+ */
+void DJIMotorSetOutputLimit(DJIMotorInstance *motor, float output_limit);
 
 #endif // !DJI_MOTOR_H

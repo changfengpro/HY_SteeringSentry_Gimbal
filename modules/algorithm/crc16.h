@@ -1,19 +1,10 @@
-/*
- * @Description: 
- * @Author: changfeng
- * @brief: 
- * @version: 
- * @Date: 2025-01-23 18:09:00
- * @LastEditors:  
- * @LastEditTime: 2025-02-13 14:42:26
- */
 #ifndef __CRC16_H
 #define __CRC16_H
 #include "main.h"
 
 #define CRC_START_16 0xFFFF
 #define CRC_START_MODBUS 0xFFFF
-#define CRC_POLY_16 0x8408
+#define CRC_POLY_16 0xA001
 
 uint16_t crc_16(const uint8_t *input_str, uint16_t num_bytes);
 uint16_t crc_modbus(const uint8_t *input_str, uint16_t num_bytes);

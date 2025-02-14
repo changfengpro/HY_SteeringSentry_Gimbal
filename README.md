@@ -1,12 +1,7 @@
-<!--
- * @Description: 
- * @Author: changfeng
- * @brief: 
- * @version: 
- * @Date: 2025-01-23 18:09:01
- * @LastEditors:  
- * @LastEditTime: 2025-02-11 16:32:56
--->
-# HY-2025 SteeringSentry
-**南昌航空大学洪鹰战队** ***2025*** *舵轮哨兵云台代码* 
+# HY2024步兵代码（MC02控制板）
+
+使用基于STM32H723的达妙MC02开发板。代码基于跃鹿开源框架。
+
+------
+
 

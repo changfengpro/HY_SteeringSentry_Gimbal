@@ -16,7 +16,7 @@
 #include "stdint.h"
 #include "main.h"
 #include "cmsis_os.h"
-#include "stm32f407xx.h"
+//#include "stm32f407xx.h"
 #include "arm_math.h"
 
 
@@ -32,7 +32,7 @@
 #define mcos(x) (arm_cos_f32(x))
 
 typedef arm_matrix_instance_f32 mat;
-// è‹¥è¿ç®—é€Ÿåº¦ä¸å¤Ÿ,å¯ä»¥ä½¿ç”¨q31ä»£æ›¿f32,ä½†æ˜¯ç²¾åº¦ä¼šé™ä½
+// ÈôÔËËãËÙ¶È²»¹»,¿ÉÒÔÊ¹ÓÃq31´úÌæf32,µ«ÊÇ¾«¶È»á½µµÍ
 #define MatAdd arm_mat_add_f32
 #define MatSubtract arm_mat_sub_f32
 #define MatMultiply arm_mat_mult_f32
@@ -85,28 +85,30 @@ void MatInit(mat *m, uint8_t row, uint8_t col);
 #define VAL_MAX(a, b) ((a) > (b) ? (a) : (b))
 
 /**
- * @brief è¿”å›ä¸€å—å¹²å‡€çš„å†…ï¿½?,ä¸è¿‡ä»ç„¶éœ€è¦å¼ºåˆ¶è½¬ï¿½?ä¸ºä½ éœ€è¦çš„ç±»å‹
+ * @brief ·µ»ØÒ»¿é¸É¾»µÄÄÚ??,²»¹ıÈÔÈ»ĞèÒªÇ¿ÖÆ×ª??ÎªÄãĞèÒªµÄÀàĞÍ
  *
- * @param size åˆ†é…å¤§å°
+ * @param size ·ÖÅä´óĞ¡
  * @return void*
  */
 void *zmalloc(size_t size);
 
-// ï¿½ï¿½ï¿½Ù¿ï¿½ï¿½ï¿½
+// ???????
 float Sqrt(float x);
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+float float_Square(float x);
+// ????????
 float abs_limit(float num, float Limit);
-// ï¿½Ğ¶Ï·ï¿½ï¿½ï¿½Î»
+// ?§Ø????¦Ë
 float sign(float value);
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ????????
 float float_deadband(float Value, float minValue, float maxValue);
-// ï¿½Ş·ï¿½ï¿½ï¿½ï¿½ï¿½
+// ???????
 float float_constrain(float Value, float minValue, float maxValue);
-// ï¿½Ş·ï¿½ï¿½ï¿½ï¿½ï¿½
+// ???????
 int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue);
-// Ñ­ï¿½ï¿½ï¿½Ş·ï¿½ï¿½ï¿½ï¿½ï¿½
+// ??????????
 float loop_float_constrain(float Input, float minValue, float maxValue);
-// ï¿½Ç¶ï¿½ ï¿½ï¿½ï¿½Ş·ï¿½ 180 ~ -180
+// ??? ????? 180 ~ -180
 float theta_format(float Ang);
 
 int float_rounding(float raw);

@@ -87,23 +87,21 @@ void PWMStartDMA(PWMInstance *pwm, uint32_t *pData, uint32_t Size)
 }
 
 // 设置pwm对应定时器时钟源频率
-//tim2~7,12~14:APB1  tim1,8~11:APB2
-static uint32_t PWMSelectTclk(TIM_HandleTypeDef *htim )
+static uint32_t PWMSelectTclk(TIM_HandleTypeDef *htim)
 {
-    uintptr_t tclk_temp  = ((uintptr_t)((htim)->Instance));
-    if (
-            (tclk_temp <= (APB1PERIPH_BASE + 0x2000UL)) &&
-            (tclk_temp >= (APB1PERIPH_BASE + 0x0000UL)))
+    uintptr_t tclk_temp = ((uintptr_t)((htim)->Instance));
+
+    // 判断是否为 APB1 定时器 (TIM2~TIM7, TIM12~TIM14)
+    if ((tclk_temp >= (APB1PERIPH_BASE + 0x0000UL)) &&
+        (tclk_temp <= (APB1PERIPH_BASE + 0x83FFUL))) // 根据芯片参考手册调整范围
     {
-        return (HAL_RCC_GetPCLK1Freq() * (APBPrescTable[(RCC->CFGR & RCC_CFGR_PPRE1)>> RCC_CFGR_PPRE1_Pos] == 0 ? 1 : 2));
+        return (HAL_RCC_GetPCLK1Freq() * ((RCC->D1CFGR & RCC_D1CFGR_HPRE) == 0 ? 1 : 2));
     }
-    else if (
-            ((tclk_temp <= (APB2PERIPH_BASE + 0x0400UL)) &&
-             (tclk_temp >= (APB2PERIPH_BASE + 0x0000UL))) ||
-            ((tclk_temp <= (APB2PERIPH_BASE + 0x4800UL)) &&
-             (tclk_temp >= (APB2PERIPH_BASE + 0x4000UL))))
+    // 判断是否为 APB2 定时器 (TIM1, TIM8)
+    else if ((tclk_temp >= (APB2PERIPH_BASE + 0x0000UL)) &&
+             (tclk_temp <= (APB2PERIPH_BASE + 0x03FFUL))) // 根据芯片参考手册调整范围
     {
-        return (HAL_RCC_GetPCLK2Freq() * (APBPrescTable[(RCC->CFGR & RCC_CFGR_PPRE1)>> RCC_CFGR_PPRE1_Pos] == 0 ? 1 : 2));
+        return (HAL_RCC_GetPCLK2Freq() * ((RCC->D1CFGR & RCC_D1CFGR_HPRE) == 0 ? 1 : 2));
     }
     return 0;
 }

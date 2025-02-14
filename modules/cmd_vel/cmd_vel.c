@@ -5,7 +5,7 @@
  * @version: 
  * @Date: 2025-02-01 20:34:56
  * @LastEditors:  
- * @LastEditTime: 2025-02-13 12:58:22
+ * @LastEditTime: 2025-02-13 20:35:52
  */
 
 #include "cmd_vel.h"
@@ -54,7 +54,7 @@ static void Cmd_vel_Parse(const uint8_t *cmd_vel_buf)
         // memcpy(&radar_ctrl.angular.z, &cmd_vel_buf[21], sizeof(float));
 
         memcpy(&low_contr, cmd_vel_buf, 27);
-        HAL_UART_Transmit_DMA(&huart1, low_contr, CMD_VEL_CONTROL_FRAME_SIZE);
+        HAL_UART_Transmit_DMA(&huart10, low_contr, CMD_VEL_CONTROL_FRAME_SIZE);
 
 
         LOGINFO("[cmd_vel] Parsed data: Linear x: %.6f, Linear y: %.6f, Linear z: %.6f, "
