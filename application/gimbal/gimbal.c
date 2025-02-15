@@ -11,9 +11,10 @@
 #define PITCH_L_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
 #define YAW_R_INIT_ANGLE -30.0f // 云台初始角度
 #define PITCH_R_INIT_ANGLE -120.5f // 云台初始俯仰角度   -118.0f
-#define PITCH_R_MIN 25.3 // 右云台经IMU测出下限时的pitch角度
+#define PITCH_R_MIN 28 // 右云台经IMU测出下限时的pitch角度 25.3
 #define YAW_COEFF_REMOTE 0.036363636f //云台遥控系数
 #define PITCH_COEFF_REMOTE 0.134848485f //云台俯仰遥控系数
+#define YAW_VISION_OFFSET 12
 
 static attitude_t *gimbal_IMU_data; // 云台IMU数据
 static DJIMotorInstance *yaw_l_motor, *yaw_r_motor, *pitch_l_motor, *pitch_r_motor; // 云台电机实例
@@ -38,14 +39,14 @@ void GimbalInit()
         },
         .controller_param_init_config = {
             .angle_PID = {
-                .Kp = 50, // YL:8  Me:50
-                .Ki = 0,
+                .Kp = 20, // YL:8  Me:50
+                .Ki = 10,
                 .Kd = 0,
                 .DeadBand = 0.1,
                 .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
-                .IntegralLimit = 100,
+                .IntegralLimit = 2000,
 
-                .MaxOut = 500,
+                .MaxOut = 800,
             },
             .speed_PID = {
                 .Kp = 50,  // 50
@@ -76,11 +77,11 @@ void GimbalInit()
         .controller_param_init_config = {
             .angle_PID = {
                 .Kp = 50, // YL:30  Me:50
-                .Ki = 0,
+                .Ki = 15,
                 .Kd = 0,
                 .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
-                .IntegralLimit = 100,
-                .MaxOut = 500,
+                .IntegralLimit = 2000,
+                .MaxOut = 800,
             },
             .speed_PID = {
                 .Kp = 15,  // 15    空载k = 10
@@ -123,10 +124,13 @@ void GimbalInit()
 
 
 /**
- * @brief 电机发送角度计算
+ * @brief 角度计算
  */
-static void VisionSetCalc()
+static void VisionAngleCalc()
 {   
+    vision_gimbal_data.Vision_r_yaw = gimbal_IMU_data->Yaw + yaw_r_motor->measure.total_angle - YAW_R_INIT_ANGLE;
+    vision_gimbal_data.Vision_r_pitch = pitch_r_motor->measure.total_angle + PITCH_R_MIN - PITCH_R_INIT_ANGLE;
+
     vision_gimbal_data.Vision_set_r_yaw = vision_gimbal_data.Vision_r_yaw_tar + YAW_R_INIT_ANGLE - gimbal_IMU_data->Yaw;
     vision_gimbal_data.Vision_set_r_pitch = vision_gimbal_data.Vision_r_pitch_tar + PITCH_R_INIT_ANGLE - PITCH_R_MIN;
 
@@ -147,8 +151,8 @@ void GimbalTask()
         vision_gimbal_data.Vision_r_pitch_tar = gimbal_cmd_recv.pitch;
     }
 
-    VisionSetCalc();
-
+    VisionAngleCalc();
+    VisionSetAltitude(vision_gimbal_data.Vision_r_yaw * DEGREE_2_RAD, vision_gimbal_data.Vision_r_pitch * DEGREE_2_RAD, 0);
     // @todo:现在已不再需要电机反馈,实际上可以始终使用IMU的姿态数据来作为云台的反馈,yaw电机的offset只是用来跟随底盘
     // 根据控制模式进行电机反馈切换和过渡,视觉模式在robot_cmd模块就已经设置好,gimbal只看yaw_ref和pitch_ref
     switch (gimbal_cmd_recv.gimbal_mode)
@@ -185,7 +189,7 @@ void GimbalTask()
         // DJIMotorSetRef(yaw_l_motor, -gimbal_cmd_recv.yaw + YAW_L_INIT_ANGLE); // yaw和pitch会在robot_cmd中处理好多圈和单圈
         // DJIMotorSetRef(pitch_l_motor, pitch_r_angle);
         DJIMotorSetRef(yaw_r_motor, -gimbal_cmd_recv.yaw + YAW_R_INIT_ANGLE);
-        DJIMotorSetRef(pitch_r_motor, -gimbal_cmd_recv.pitch + PITCH_R_INIT_ANGLE);
+        DJIMotorSetRef(pitch_r_motor, -gimbal_cmd_recv.pitch + PITCH_R_INIT_ANGLE - 5.0);
         break;
     // 云台自瞄模式，自瞄计算使用相对母云台角度，发送时转换为实际角度
     case GIMBAL_VISION: 
@@ -198,9 +202,11 @@ void GimbalTask()
         DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, MOTOR_FEED);
 
-        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, -52, 52);
 
-        DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw);
+        // LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, -90, 52);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_pitch, -180, 20);
+
+        DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw + YAW_VISION_OFFSET);
         DJIMotorSetRef(pitch_r_motor, vision_gimbal_data.Vision_set_r_pitch);
 
     default:

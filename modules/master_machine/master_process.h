@@ -4,8 +4,8 @@
 #include "bsp_usart.h"
 #include "seasky_protocol.h"
 
-#define VISION_RECV_SIZE 18u // 当前为固定值,36字节
-#define VISION_SEND_SIZE 36u
+#define VISION_RECV_SIZE 48u // 当前为固定值,36字节
+#define VISION_SEND_SIZE 28u
 
 #pragma pack(1)
 typedef enum
@@ -17,12 +17,12 @@ typedef enum
 
 typedef enum
 {	//默认状态
-	// NO_TARGET = 0,
-	// TRACKING = 1,
+	NO_TARGET = 0,
+	TRACKING = 1,
 
 	//调试状态
-	NO_TARGET = 1,
-	TRACKING = 0,
+	// NO_TARGET = 1,
+	// TRACKING = 0,
 
 	READY_TO_FIRE = 2
 } Target_State_e;
@@ -121,5 +121,7 @@ void VisionSetFlag(Enemy_Color_e enemy_color, Work_Mode_e work_mode, Bullet_Spee
  * @param pitch
  */
 void VisionSetAltitude(float yaw, float pitch, float roll);
+
+void VisionTrajectory();
 
 #endif // !MASTER_PROCESS_H

@@ -178,6 +178,7 @@ static void VisionRadaControlSet()
     gimbal_cmd_send.gimbal_mode = GIMBAL_VISION;    //云台自瞄模式
     gimbal_cmd_send.yaw = vision_recv_data->yaw;
     gimbal_cmd_send.pitch = vision_recv_data->pitch;
+    
 }
 
 /**
@@ -307,6 +308,7 @@ void RobotCMDTask()
     SubGetMessage(shoot_feed_sub, &shoot_fetch_data);
     SubGetMessage(gimbal_feed_sub, &gimbal_fetch_data);
 
+    VisionTrajectory();
     // 根据gimbal的反馈值计算云台和底盘正方向的夹角,不需要传参,通过static私有变量完成
     CalcOffsetAngle();
     // 根据遥控器左侧开关,确定当前使用的控制模式为遥控器调试还是键鼠

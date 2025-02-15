@@ -9,6 +9,11 @@ typedef struct
     float Vision_l_pitch_tar;
     float Vision_r_pitch_tar;
 
+    float Vision_l_yaw; // 当前绝对坐标
+    float Vision_l_pitch;
+    float Vision_r_yaw;
+    float Vision_r_pitch;
+
     float Vision_set_l_yaw; // 自瞄模式下给电机发送的值
     float Vision_set_r_yaw;
     float Vision_set_l_pitch;  
