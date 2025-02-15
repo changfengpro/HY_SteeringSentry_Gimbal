@@ -10,7 +10,8 @@
 #define YAW_L_INIT_ANGLE -150.0f // 云台初始角度
 #define PITCH_L_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
 #define YAW_R_INIT_ANGLE -30.0f // 云台初始角度
-#define PITCH_R_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
+#define PITCH_R_INIT_ANGLE -120.5f // 云台初始俯仰角度   -118.0f
+#define PITCH_R_MIN 25.3 // 右云台经IMU测出下限时的pitch角度
 #define YAW_COEFF_REMOTE 0.036363636f //云台遥控系数
 #define PITCH_COEFF_REMOTE 0.134848485f //云台俯仰遥控系数
 
@@ -127,6 +128,7 @@ void GimbalInit()
 static void VisionSetCalc()
 {   
     vision_gimbal_data.Vision_set_r_yaw = vision_gimbal_data.Vision_r_yaw_tar + YAW_R_INIT_ANGLE - gimbal_IMU_data->Yaw;
+    vision_gimbal_data.Vision_set_r_pitch = vision_gimbal_data.Vision_r_pitch_tar + PITCH_R_INIT_ANGLE - PITCH_R_MIN;
 
 }
 
@@ -142,11 +144,10 @@ void GimbalTask()
     if(gimbal_cmd_recv.gimbal_mode == GIMBAL_VISION)
     {
         vision_gimbal_data.Vision_r_yaw_tar = gimbal_cmd_recv.yaw;
+        vision_gimbal_data.Vision_r_pitch_tar = gimbal_cmd_recv.pitch;
     }
 
     VisionSetCalc();
-
-    float pitch_r_angle = -gimbal_cmd_recv.pitch + PITCH_R_INIT_ANGLE; // 子云台当前角度    
 
     // @todo:现在已不再需要电机反馈,实际上可以始终使用IMU的姿态数据来作为云台的反馈,yaw电机的offset只是用来跟随底盘
     // 根据控制模式进行电机反馈切换和过渡,视觉模式在robot_cmd模块就已经设置好,gimbal只看yaw_ref和pitch_ref
@@ -184,7 +185,7 @@ void GimbalTask()
         // DJIMotorSetRef(yaw_l_motor, -gimbal_cmd_recv.yaw + YAW_L_INIT_ANGLE); // yaw和pitch会在robot_cmd中处理好多圈和单圈
         // DJIMotorSetRef(pitch_l_motor, pitch_r_angle);
         DJIMotorSetRef(yaw_r_motor, -gimbal_cmd_recv.yaw + YAW_R_INIT_ANGLE);
-        DJIMotorSetRef(pitch_r_motor, pitch_r_angle);
+        DJIMotorSetRef(pitch_r_motor, -gimbal_cmd_recv.pitch + PITCH_R_INIT_ANGLE);
         break;
     // 云台自瞄模式，自瞄计算使用相对母云台角度，发送时转换为实际角度
     case GIMBAL_VISION: 
@@ -200,6 +201,7 @@ void GimbalTask()
         LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, -52, 52);
 
         DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw);
+        DJIMotorSetRef(pitch_r_motor, vision_gimbal_data.Vision_set_r_pitch);
 
     default:
         break;
