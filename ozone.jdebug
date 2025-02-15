@@ -4,9 +4,9 @@
 *                         www.segger.com                             *
 **********************************************************************
 
-File          : D:/STM32_RM/MovetoH7/basic_framework_MC02_1/h723ozone.jdebug
-Created       : 20 Aug 2024 17:21
-Ozone Version : V3.30c
+File          : /home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/ozone.jdebug
+Created       : 15 Feb 2025 11:13
+Ozone Version : V3.34
 */
 
 /*********************************************************************
@@ -22,17 +22,16 @@ void OnProjectLoad (void) {
   //
   // Dialog-generated settings
   //
-  //Project.AddPathSubstitute ("$(ProjectDir)");
+  Project.AddPathSubstitute ("/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7", "$(ProjectDir)");
+  Project.AddPathSubstitute ("/home/rmer/stm/hy_steeringsentry/sentry_gimbal_h7", "$(ProjectDir)");
   Project.SetDevice ("STM32H723VG");
   Project.SetHostIF ("USB", "20781320");
   Project.SetTargetIF ("SWD");
   Project.SetTIFSpeed ("4 MHz");
   Project.AddSvdFile ("$(InstallDir)/Config/CPU/Cortex-M7F.svd");
-  Project.AddSvdFile ("$(ProjectDir)/STM32H723.svd");
   //
   // User settings
   //
-  Project.SetOSPlugin ("C:\Program Files\SEGGER\Ozone\Plugins\OS\FreeRTOSPlugin_CM7.js");
   File.Open ("$(ProjectDir)/build/Basic_Framework_MC02.elf");
 }
 

@@ -14,7 +14,7 @@
 #define YAW_COEFF_REMOTE 0.036363636f //云台遥控系数
 #define PITCH_COEFF_REMOTE 0.134848485f //云台俯仰遥控系数
 
-static attitude_t *gimba_IMU_data; // 云台IMU数据
+static attitude_t *gimbal_IMU_data; // 云台IMU数据
 static DJIMotorInstance *yaw_l_motor, *yaw_r_motor, *pitch_l_motor, *pitch_r_motor; // 云台电机实例
 
 static Publisher_t *gimbal_pub;                   // 云台应用消息发布者(云台反馈给cmd)
@@ -28,7 +28,7 @@ static Vision_Gimbal_Data_s vision_gimbal_data; // 自瞄时云台数据(为方�
 
 void GimbalInit()
 {   
-    gimba_IMU_data = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源
+    gimbal_IMU_data = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源
     // YAW
     Motor_Init_Config_s yaw_config = {
         .can_init_config = {
@@ -54,9 +54,9 @@ void GimbalInit()
                 .IntegralLimit = 3000,
                 .MaxOut = 20000,
             },
-            .other_angle_feedback_ptr = &gimba_IMU_data->YawTotalAngle,
+            .other_angle_feedback_ptr = &gimbal_IMU_data->YawTotalAngle,
             // 还需要增加角速度额外反馈指针,注意方向,ins_task.md中有c板的bodyframe坐标系说明
-            .other_speed_feedback_ptr = &gimba_IMU_data->Gyro[2],
+            .other_speed_feedback_ptr = &gimbal_IMU_data->Gyro[2],
         },
         .controller_setting_init_config = {
             .angle_feedback_source = MOTOR_FEED,
@@ -89,9 +89,9 @@ void GimbalInit()
                 .IntegralLimit = 2500,
                 .MaxOut = 20000,
             },
-            .other_angle_feedback_ptr = &gimba_IMU_data->Pitch,
+            .other_angle_feedback_ptr = &gimbal_IMU_data->Pitch,
             // 还需要增加角速度额外反馈指针,注意方向,ins_task.md中有c板的bodyframe坐标系说明
-            .other_speed_feedback_ptr = (&gimba_IMU_data->Gyro[0]),
+            .other_speed_feedback_ptr = (&gimbal_IMU_data->Gyro[0]),
         },
         .controller_setting_init_config = {
             .angle_feedback_source = MOTOR_FEED,
@@ -120,27 +120,13 @@ void GimbalInit()
     gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
 }
 
-/**
- * @brief 计算相对母云台的角度，供于自瞄计算
- */
-static void RelaYawCalc()
-{
-    vision_gimbal_data.gimbal_rela.r_yaw = yaw_r_motor->measure.total_angle - YAW_R_INIT_ANGLE;
-    vision_gimbal_data.gimbal_rela.r_single_yaw = fmodf(vision_gimbal_data.gimbal_rela.r_yaw, 360.0);
-
-    // if(vision_gimbal_data.gimbal_rela.r_single_yaw < 0) vision_gimbal_data.gimbal_rela.r_single_yaw += 360.0;
-}
 
 /**
- * @brief 实际角度计算
+ * @brief 电机发送角度计算
  */
 static void VisionSetCalc()
 {   
-    if(yaw_r_motor->measure.total_round < 0)
-    vision_gimbal_data.Vision_r_yaw = (yaw_r_motor->measure.total_round + 1) * 360.0 + vision_gimbal_data.gimbal_rela.r_single_yaw + gimba_IMU_data->Yaw + YAW_R_INIT_ANGLE;
-    else vision_gimbal_data.Vision_r_yaw = yaw_r_motor->measure.total_round  * 360.0 + vision_gimbal_data.gimbal_rela.r_single_yaw + gimba_IMU_data->Yaw +YAW_R_INIT_ANGLE;
-
-    vision_gimbal_data.Vision_set_l_yaw = vision_gimbal_data.Vision_r_yaw + gimbal_cmd_recv.yaw;
+    vision_gimbal_data.Vision_set_r_yaw = vision_gimbal_data.Vision_r_yaw_tar + YAW_R_INIT_ANGLE - gimbal_IMU_data->Yaw;
 
 }
 
@@ -148,14 +134,19 @@ static void VisionSetCalc()
 /* 机器人云台控制核心任务,后续考虑只保留IMU控制,不再需要电机的反馈 */
 void GimbalTask()
 {   
+
     // 获取云台控制数据
     // 后续增加未收到数据的处理
     SubGetMessage(gimbal_sub, &gimbal_cmd_recv);
 
-    float pitch_r_angle = -gimbal_cmd_recv.pitch + PITCH_R_INIT_ANGLE; // 子云台当前角度    
+    if(gimbal_cmd_recv.gimbal_mode == GIMBAL_VISION)
+    {
+        vision_gimbal_data.Vision_r_yaw_tar = gimbal_cmd_recv.yaw;
+    }
 
-    RelaYawCalc();
     VisionSetCalc();
+
+    float pitch_r_angle = -gimbal_cmd_recv.pitch + PITCH_R_INIT_ANGLE; // 子云台当前角度    
 
     // @todo:现在已不再需要电机反馈,实际上可以始终使用IMU的姿态数据来作为云台的反馈,yaw电机的offset只是用来跟随底盘
     // 根据控制模式进行电机反馈切换和过渡,视觉模式在robot_cmd模块就已经设置好,gimbal只看yaw_ref和pitch_ref
@@ -205,6 +196,9 @@ void GimbalTask()
         DJIMotorChangeFeed(yaw_r_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, MOTOR_FEED);
+
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, -52, 52);
+
         DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw);
 
     default:
@@ -216,7 +210,7 @@ void GimbalTask()
     // ...
 
     // 设置反馈数据,主要是imu和yaw的ecd
-    gimbal_feedback_data.gimbal_imu_data = *gimba_IMU_data;
+    gimbal_feedback_data.gimbal_imu_data = *gimbal_IMU_data;
     gimbal_feedback_data.yaw_motor_single_round_angle = yaw_l_motor->measure.angle_single_round;
 
     // 推送消息
