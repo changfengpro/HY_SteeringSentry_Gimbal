@@ -34,7 +34,7 @@ void ShootTask();
 /**
  * @brief 拨弹轮堵转检测函数
  * 
- * @return {*}
+ * @return 
  */
 void LoaderStallDetection();
 

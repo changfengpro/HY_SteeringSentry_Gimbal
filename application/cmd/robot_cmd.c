@@ -178,6 +178,8 @@ static void VisionRadaControlSet()
     gimbal_cmd_send.gimbal_mode = GIMBAL_VISION;    //云台自瞄模式
     gimbal_cmd_send.yaw = vision_recv_data->yaw;
     gimbal_cmd_send.pitch = vision_recv_data->pitch;
+    if(vision_recv_data->fire_mode == NO_FIRE)  shoot_cmd_send.friction_mode = FRICTION_OFF;
+    if(vision_recv_data->fire_mode == AUTO_FIRE) shoot_cmd_send.friction_mode = FRICTION_ON;
     
 }
 
