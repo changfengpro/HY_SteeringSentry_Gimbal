@@ -108,7 +108,7 @@ Vision_Recv_s *VisionInit(UART_HandleTypeDef *_handle)
 
     return &recv_data;
 }
-
+uint8_t color_1=2;
 /**
  * @brief 发送函数
  *
@@ -126,6 +126,9 @@ void VisionSend()
 
     VisionSetAimXYZ(trajectory->aim_x,trajectory->aim_y,trajectory->aim_z);
 
+    
+    send_data.enemy_color=color_1;
+
     build_rv2_send_data(&send_data,send_buff,&tx_len);
     USARTSend(vision_usart_instance, send_buff, tx_len, USART_TRANSFER_DMA); // 和视觉通信使用IT,防止和接收使用的DMA冲突
     // 此处为HAL设计的缺陷,DMASTOP会停止发送和接收,导致再也无法进入接收中断.
@@ -139,7 +142,8 @@ void VisionTrajectory()
     static float trajectory_dt=0;
     static float current_yaw_circle=0,current_yaw_base=0;
     static float last_pitch,last_yaw;
-    bool is_lost=(recv_data.offline!=0)||(recv_data.target_state!=TRACKING);
+    static bool is_lost=0;
+    is_lost=(recv_data.offline!=0)||(recv_data.target_state!=TRACKING);
     trajectory_dt = DWT_GetDeltaT(&trajectory_dt_cnt);
 
     //计算yaw的圈数用于补偿到总圈数

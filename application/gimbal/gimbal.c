@@ -39,21 +39,22 @@ void GimbalInit()
         },
         .controller_param_init_config = {
             .angle_PID = {
-                .Kp = 30, // YL:8  Me:50
-                .Ki = 10,
+                .Kp = 52, // Me:30
+                .Ki = 30,
                 .Kd = 0,
                 .DeadBand = 0.1,
-                .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
-                .IntegralLimit = 2000,
-
+                .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement | PID_OutputFilter,
+                .IntegralLimit = 100,
+                .Output_LPF_RC=0.00005,
                 .MaxOut = 2000,
             },
             .speed_PID = {
-                .Kp = 50,  // 50
-                .Ki = 200, // 200
+                .Kp = 40,  // 50
+                .Ki = 50, // 200
                 .Kd = 0,
-                .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
-                .IntegralLimit = 3000,
+                .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement |PID_OutputFilter,
+                .Output_LPF_RC=0.00649999983,
+                .IntegralLimit = 2000,
                 .MaxOut = 20000,
             },
             .other_angle_feedback_ptr = &gimbal_IMU_data->YawTotalAngle,
@@ -76,19 +77,20 @@ void GimbalInit()
         },
         .controller_param_init_config = {
             .angle_PID = {
-                .Kp = 50, // YL:30  Me:50
-                .Ki = 15,
+                .Kp = 50, //  Me:20
+                .Ki = 15, // 3
                 .Kd = 0,
                 .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
-                .IntegralLimit = 2000,
+                .IntegralLimit = 2000, // 30
                 .MaxOut = 800,
             },
             .speed_PID = {
-                .Kp = 15,  // 15    空载k = 10
-                .Ki = 300, // 300
+                .Kp = 40,  // 15    空载k = 10  Me: 46
+                .Ki = 300, // 500
                 .Kd = 0,   // 0
-                .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
-                .IntegralLimit = 2500,
+                .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement | PID_OutputFilter,
+                .Output_LPF_RC=0.00649999983,
+                .IntegralLimit = 8500,
                 .MaxOut = 20000,
             },
             .other_angle_feedback_ptr = &gimbal_IMU_data->Pitch,
@@ -206,7 +208,7 @@ void GimbalTask()
         // LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, -90, 52);
         LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_pitch, -180, 20);
 
-        DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw + YAW_VISION_OFFSET);
+        DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw);
         DJIMotorSetRef(pitch_r_motor, vision_gimbal_data.Vision_set_r_pitch);
 
     default:

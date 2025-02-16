@@ -1,3 +1,12 @@
+/*
+ * @Description: 
+ * @Author: changfeng
+ * @brief: 
+ * @version: 
+ * @Date: 2025-02-14 13:28:09
+ * @LastEditors:  
+ * @LastEditTime: 2025-02-16 16:53:29
+ */
 //
 // Created by 26090 on 25-1-13.
 //
@@ -7,8 +16,6 @@
 #include <bsp_log.h>
 #include <crc16.h>
 #include <string.h>
-
-static uint8_t send_color;
 
 static rv2_recv_protocol_s rv2_recv_data={0};
 
@@ -33,7 +40,6 @@ void build_rv2_send_data(Vision_Send_s *send,uint8_t *tx_buf,uint16_t *tx_buf_le
     rv2_send_data.yaw=send->yaw;
     //对局信息部分
     rv2_send_data.detect_color=send->enemy_color==COLOR_RED ? 1 : 0;          //自身颜色0为红，1为蓝
-    rv2_send_data.detect_color=send_color;
 
     // rv2_send_data.reset_tracker=0;
 
