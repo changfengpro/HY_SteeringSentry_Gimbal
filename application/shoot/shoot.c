@@ -18,6 +18,8 @@ static Publisher_t *shoot_pub;
 static Shoot_Ctrl_Cmd_s shoot_cmd_recv; // 来自cmd的发射控制信息
 static Subscriber_t *shoot_sub;
 static Shoot_Upload_Data_s shoot_feedback_data; // 来自cmd的发射控制信息
+static Subscriber_t *vision_gimbal_sub;
+static Vision_Gimbal_Data_s vision_gimbal_data_recv;
 static float output[2]; //存储拨弹电机的输出值
 static int count[2] = {0, 0};       //用于堵转计数
 static int enter_count[2]; //用于进入计数
@@ -156,6 +158,7 @@ void ShootInit()
 
     shoot_pub = PubRegister("shoot_feed", sizeof(Shoot_Upload_Data_s));
     shoot_sub = SubRegister("shoot_cmd", sizeof(Shoot_Ctrl_Cmd_s));
+    vision_gimbal_sub = SubRegister("vision_gimbal_data", sizeof(Vision_Gimbal_Data_s));
 }
 
 /* 机器人发射机构控制核心任务 */
@@ -163,6 +166,18 @@ void ShootTask()
 {   
     // 从cmd获取控制数据
     SubGetMessage(shoot_sub, &shoot_cmd_recv);
+    SubGetMessage(vision_gimbal_sub, &vision_gimbal_data_recv);
+
+    if(vision_gimbal_data_recv.vision_statue == GIMBAL_VISION)
+    {
+        if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 0.5)
+        {
+            shoot_cmd_recv.shoot_mode = SHOOT_ON;
+            shoot_cmd_recv.load_mode = LOAD_BURSTFIRE;
+            shoot_cmd_recv.friction_mode = FRICTION_ON;
+        } 
+    }
+    
 
     // 对shoot mode等于SHOOT_STOP的情况特殊处理,直接停止所有电机(紧急停止)
     if (shoot_cmd_recv.shoot_mode == SHOOT_OFF)
@@ -293,8 +308,8 @@ void ShootTask()
             DJIMotorSetRef(shoot_r.friction_r, 0);
             break;
         default: // 当前为了调试设定的默认值4000,因为还没有加入裁判系统无法读取弹速.
-            DJIMotorSetRef(shoot_l.friction_l, 44000);
-            DJIMotorSetRef(shoot_l.friction_r, 44000);
+            DJIMotorSetRef(shoot_r.friction_l, 44000);
+            DJIMotorSetRef(shoot_r.friction_r, 44000);
             break;
         }
     }

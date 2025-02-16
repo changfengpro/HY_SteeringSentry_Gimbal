@@ -21,6 +21,7 @@ static DJIMotorInstance *yaw_l_motor, *yaw_r_motor, *pitch_l_motor, *pitch_r_mot
 
 static Publisher_t *gimbal_pub;                   // 云台应用消息发布者(云台反馈给cmd)
 static Subscriber_t *gimbal_sub;                  // cmd控制消息订阅者
+static Publisher_t *vision_gimbal_pub; //云台视觉信息
 static Gimbal_Upload_Data_s gimbal_feedback_data; // 回传给cmd的云台状态信息
 static Gimbal_Ctrl_Cmd_s gimbal_cmd_recv;         // 来自cmd的控制信息
 static Vision_Gimbal_Data_s vision_gimbal_data; // 自瞄时云台数据(为方便计算，定义了相对角度)
@@ -122,6 +123,7 @@ void GimbalInit()
 
     gimbal_pub = PubRegister("gimbal_feed", sizeof(Gimbal_Upload_Data_s));
     gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
+    vision_gimbal_pub = PubRegister("vision_gimbal_data",sizeof(Vision_Gimbal_Data_s));
 }
 
 
@@ -138,6 +140,7 @@ static void VisionAngleCalc()
 
 }
 
+   static float temp_statue;
 
 /* 机器人云台控制核心任务,后续考虑只保留IMU控制,不再需要电机的反馈 */
 void GimbalTask()
@@ -146,12 +149,19 @@ void GimbalTask()
     // 获取云台控制数据
     // 后续增加未收到数据的处理
     SubGetMessage(gimbal_sub, &gimbal_cmd_recv);
-
+    temp_statue = gimbal_cmd_recv.gimbal_mode;
     if(gimbal_cmd_recv.gimbal_mode == GIMBAL_VISION)
     {
         vision_gimbal_data.Vision_r_yaw_tar = gimbal_cmd_recv.yaw;
         vision_gimbal_data.Vision_r_pitch_tar = gimbal_cmd_recv.pitch;
+        vision_gimbal_data.yaw_r_motor_angle = yaw_r_motor->measure.total_angle;
+        vision_gimbal_data.vision_statue = GIMBAL_VISION;
     }
+    else
+    {
+        vision_gimbal_data.vision_statue = temp_statue;
+    }
+
 
     VisionAngleCalc();
     VisionSetAltitude(vision_gimbal_data.Vision_r_yaw * DEGREE_2_RAD, vision_gimbal_data.Vision_r_pitch * DEGREE_2_RAD, 0);
@@ -205,7 +215,7 @@ void GimbalTask()
         DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, MOTOR_FEED);
 
 
-        // LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, -90, 52);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, -65, 20);
         LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_pitch, -180, 20);
 
         DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw);
@@ -225,4 +235,5 @@ void GimbalTask()
 
     // 推送消息
     PubPushMessage(gimbal_pub, (void *)&gimbal_feedback_data);
+    PubPushMessage(vision_gimbal_pub,(void *)&vision_gimbal_data);
 }

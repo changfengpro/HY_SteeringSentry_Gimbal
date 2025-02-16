@@ -185,6 +185,29 @@ typedef struct
     float shoot_rate; // 连续发射的射频,unit per s,发/秒
 } Shoot_Ctrl_Cmd_s;
 
+typedef struct 
+{   
+    float Vision_l_yaw_tar; //目标角度
+    float Vision_r_yaw_tar;
+    float Vision_l_pitch_tar;
+    float Vision_r_pitch_tar;
+
+    float Vision_l_yaw; // 当前绝对坐标
+    float Vision_l_pitch;
+    float Vision_r_yaw;
+    float Vision_r_pitch;
+
+    float Vision_set_l_yaw; // 自瞄模式下给电机发送的值
+    float Vision_set_r_yaw;
+    float Vision_set_l_pitch;  
+    float Vision_set_r_pitch;  
+
+    float yaw_r_motor_angle;
+
+    uint8_t vision_statue;
+
+} Vision_Gimbal_Data_s;
+
 /* ----------------gimbal/shoot/chassis发布的反馈数据----------------*/
 /**
  * @brief 由cmd订阅,其他应用也可以根据需要获取.

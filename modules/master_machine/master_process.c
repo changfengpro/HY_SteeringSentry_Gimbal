@@ -108,7 +108,7 @@ Vision_Recv_s *VisionInit(UART_HandleTypeDef *_handle)
 
     return &recv_data;
 }
-uint8_t color_1=2;
+uint8_t color_1=1;
 /**
  * @brief 发送函数
  *
