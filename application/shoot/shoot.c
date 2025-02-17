@@ -170,13 +170,14 @@ void ShootTask()
 
     if(vision_gimbal_data_recv.vision_statue == GIMBAL_VISION)
     {
-        if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 0.5)
+        if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 0.3)
         {
             shoot_cmd_recv.shoot_mode = SHOOT_ON;
             shoot_cmd_recv.load_mode = LOAD_BURSTFIRE;
             shoot_cmd_recv.friction_mode = FRICTION_ON;
         } 
     }
+    // shoot_cmd_recv.load_mode = LOAD_BURSTFIRE;
     
 
     // 对shoot mode等于SHOOT_STOP的情况特殊处理,直接停止所有电机(紧急停止)
@@ -352,14 +353,14 @@ void LoaderStallDetection()
         if(output[0] >= DETECTION_MAX_OUTPUT)    count[0]++;
         if(output[1] >= DETECTION_MAX_OUTPUT)    count[1]++;
     }
-    if(count[0]== 100 || count[1]== 100 && (output[0] == DETECTION_MAX_OUTPUT || output[1] == DETECTION_MAX_OUTPUT))
+    if((count[0] > 100 || count[1] > 100) && (output[0] > DETECTION_MAX_OUTPUT || output[1] > DETECTION_MAX_OUTPUT))
     {
-        if(count[0] == 100)
+        if(count[0] > 100)
         {
             shoot_l.stall_flag = 1;
             count[0] = -50;
         }
-        if(count[1] == 100)
+        if(count[1] > 100)
         {
             shoot_r.stall_flag = 1;
             count[1] = -50;

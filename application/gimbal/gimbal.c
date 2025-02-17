@@ -11,6 +11,7 @@
 #define PITCH_L_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
 #define YAW_R_INIT_ANGLE -30.0f // 云台初始角度
 #define PITCH_R_INIT_ANGLE -120.5f // 云台初始俯仰角度   -118.0f
+#define PITCH_R_INIT_SET_ANGLE -145.0f // 云台初始俯仰角度   -118.0f
 #define PITCH_R_MIN 28 // 右云台经IMU测出下限时的pitch角度 25.3
 #define YAW_COEFF_REMOTE 0.036363636f //云台遥控系数
 #define PITCH_COEFF_REMOTE 0.134848485f //云台俯仰遥控系数
@@ -201,7 +202,7 @@ void GimbalTask()
         // DJIMotorSetRef(yaw_l_motor, -gimbal_cmd_recv.yaw + YAW_L_INIT_ANGLE); // yaw和pitch会在robot_cmd中处理好多圈和单圈
         // DJIMotorSetRef(pitch_l_motor, pitch_r_angle);
         DJIMotorSetRef(yaw_r_motor, -gimbal_cmd_recv.yaw + YAW_R_INIT_ANGLE);
-        DJIMotorSetRef(pitch_r_motor, -gimbal_cmd_recv.pitch + PITCH_R_INIT_ANGLE - 5.0);
+        DJIMotorSetRef(pitch_r_motor, -gimbal_cmd_recv.pitch + PITCH_R_INIT_SET_ANGLE - 5.0);
         break;
     // 云台自瞄模式，自瞄计算使用相对母云台角度，发送时转换为实际角度
     case GIMBAL_VISION: 
