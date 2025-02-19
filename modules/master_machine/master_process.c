@@ -83,7 +83,6 @@ static void DecodeVision()
     parse_rv2_receive_data(&recv_data,vision_usart_instance->recv_buff,VISION_RECV_SIZE);
 
     rv2_trajectory_passin(rv2_recv,&send_data.yaw);
-
     // TODO: code to resolve flag_register;
 }
 

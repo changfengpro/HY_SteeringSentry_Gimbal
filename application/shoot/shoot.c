@@ -10,7 +10,7 @@
 
 // static servo_instance *lid; 需要增加弹舱盖
 
-#define DETECTION_MAX_OUTPUT 2700.0f
+#define DETECTION_MAX_OUTPUT 6000.0f
 
 extern Shoot_Ctrl_Cmd_s shoot_cmd_send;      // 传递给发射的控制信息
 static ShootInstance shoot_l, shoot_r; // 左右发射机构实例
@@ -124,21 +124,23 @@ void ShootInit()
                 .Kp = 50, // 10
                 .Ki = 10,
                 .Kd = 0,
-                .MaxOut = 200,
+                .MaxOut = 500,
+                .Improve = PID_Integral_Limit | PID_DerivativeFilter,
+                .IntegralLimit = 20000,
             },
             .speed_PID = {
-                .Kp = 20, // 10
-                .Ki = 1, // 1
+                .Kp = 30, // 20
+                .Ki = 2, // 1
                 .Kd = 0,
-                .Improve = PID_Integral_Limit,
+                .Improve = PID_Integral_Limit | PID_DerivativeFilter,
                 .IntegralLimit = 5000,
-                .MaxOut = 5000,
+                .MaxOut = 20000,
             },
             .current_PID = {
                 .Kp = 0.7, // 0.7
                 .Ki = 0.1, // 0.1
                 .Kd = 0,
-                .Improve = PID_Integral_Limit,
+                .Improve = PID_Integral_Limit | PID_DerivativeFilter,
                 .IntegralLimit = 5000,
                 .MaxOut = 5000,
             },
@@ -246,7 +248,7 @@ void ShootTask()
             {
                 DJIMotorOuterLoop(shoot_l.loader, ANGLE_LOOP);                                              // 切换到角度环
                 DJIMotorSetRef(shoot_l.loader, -(shoot_l.loader->measure.total_angle + ONE_BULLET_DELTA_ANGLE)); // 控制量减少一发弹丸的角度
-                if(enter_count[0] == 80)
+                if(enter_count[0] == 20)
                 {
                     shoot_l.stall_flag = 0;
                     enter_count[0] = 0;
@@ -258,7 +260,7 @@ void ShootTask()
             {
                 DJIMotorOuterLoop(shoot_r.loader, ANGLE_LOOP);
                 DJIMotorSetRef(shoot_r.loader, -(shoot_r.loader->measure.total_angle + ONE_BULLET_DELTA_ANGLE)); // 控制量减少一发弹丸的角度
-                if(enter_count[1] == 80)
+                if(enter_count[1] == 20)
                 {
                     shoot_r.stall_flag = 0;
                     enter_count[1] = 0;
@@ -340,35 +342,72 @@ void ShootTask()
     PubPushMessage(shoot_pub, (void *)&shoot_feedback_data);
 }
 
+/**
+ * @brief 检测拨弹轮是否卡弹
+ * 
+ * 该函数通过检测拨弹轮的实际电流值来判断拨弹轮是否卡弹。
+ * 如果电流值超过设定的最大值（DETECTION_MAX_OUTPUT），则增加计数器。
+ * 如果电流值低于最大值，则减少计数器并限制其范围在0到10之间。
+ * 当计数器超过100且电流值仍然超过最大值时，设置卡弹标志并重置计数器。
+ */
 void LoaderStallDetection()
 {   
+    // 获取当前时间戳
     detection_start = DWT_GetTimeline_ms();
+    // 获取左拨弹轮的实际电流值
     output[0] = shoot_l.loader->measure.real_current;
+    // 获取右拨弹轮的实际电流值
     output[1] = shoot_r.loader->measure.real_current;
 
+    // 如果计数器小于等于0
     if(count[0] <= 0 || count[1] <= 0)
     {
+        // 如果左拨弹轮计数器小于0，则增加计数器
         if(count[0] < 0)    count[0]++;
+        // 如果右拨弹轮计数器小于0，则增加计数器
         if(count[1] < 0)    count[1]++;
     }
 
+    // 如果左拨弹轮或右拨弹轮的电流值超过最大值
     if(output[0] >= DETECTION_MAX_OUTPUT || output[1] >= DETECTION_MAX_OUTPUT)
     {
+        // 如果左拨弹轮的电流值超过最大值，则增加计数器
         if(output[0] >= DETECTION_MAX_OUTPUT)    count[0]++;
+        // 如果右拨弹轮的电流值超过最大值，则增加计数器
         if(output[1] >= DETECTION_MAX_OUTPUT)    count[1]++;
     }
-    if((count[0] > 100 || count[1] > 100) && (output[0] > DETECTION_MAX_OUTPUT || output[1] > DETECTION_MAX_OUTPUT))
+
+    // 如果左拨弹轮或右拨弹轮的电流值低于最大值
+    if(output[0] < DETECTION_MAX_OUTPUT || output[1] < DETECTION_MAX_OUTPUT)
     {
-        if(count[0] > 100)
+        // 如果左拨弹轮的电流值低于最大值，则减少计数器并限制其范围在0到10之间
+        if(output[0] < DETECTION_MAX_OUTPUT)
         {
-            shoot_l.stall_flag = 1;
-            count[0] = -50;
+            count[0]--;
+            LIMIT_MIN_MAX(count[0], 0, 10);
         }
-        if(count[1] > 100)
+        // 如果右拨弹轮的电流值低于最大值，则减少计数器并限制其范围在0到10之间
+        if(output[1] < DETECTION_MAX_OUTPUT)
         {
-            shoot_r.stall_flag = 1;
-            count[1] = -50;
+            count[1]--;
+            LIMIT_MIN_MAX(count[1], 0, 10);
         }
     }
-    
+
+    // 如果计数器超过100且电流值仍然超过最大值
+    if((count[0] > 10 || count[1] > 10) && (output[0] > DETECTION_MAX_OUTPUT || output[1] > DETECTION_MAX_OUTPUT))
+    {
+        // 如果左拨弹轮计数器超过100，则设置卡弹标志并重置计数器
+        if(count[0] > 10)
+        {
+            shoot_l.stall_flag = 1;
+            count[0] = 0;
+        }
+        // 如果右拨弹轮计数器超过100，则设置卡弹标志并重置计数器
+        if(count[1] > 10)
+        {
+            shoot_r.stall_flag = 1;
+            count[1] = 0;
+        }
+    }
 }

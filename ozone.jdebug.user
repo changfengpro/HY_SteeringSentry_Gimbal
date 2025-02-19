@@ -1,17 +1,22 @@
 
 
+
 Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/shoot/shoot.c:173, State=BP_STATE_DISABLED
 Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:158, State=BP_STATE_DISABLED
 Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:167:5, State=BP_STATE_DISABLED
+OpenDocument="port.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c", Line=424
+OpenDocument="motor_task.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/motor/motor_task.c", Line=0
+OpenDocument="shoot.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/shoot/shoot.c", Line=154
+OpenDocument="main.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/Core/Src/main.c", Line=71
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=2, w=561, h=103, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=2, w=561, h=97, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=549, h=321, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=561, h=103, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=561, h=114, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=694, h=264, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x240043B7
-OpenWindow="Local Data", DockArea=RIGHT, x=0, y=1, w=561, h=103, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Local Data", DockArea=RIGHT, x=0, y=1, w=561, h=64, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=1, w=549, h=349, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Data Sampling", DockArea=BOTTOM, x=1, y=0, w=733, h=264, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=RIGHT, x=0, y=3, w=561, h=349, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="215;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="376;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="351;0"
+OpenWindow="Timeline", DockArea=RIGHT, x=0, y=3, w=561, h=383, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="212;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="376;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="351;0"
 OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=411, h=264, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
 TableHeader="Local Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type";"Scope"], ColWidths=[154;100;100;100;231;100]
@@ -43,3 +48,6 @@ WatchedExpression="shoot_cmd_recv", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="shoot_r", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="shoot_cmd_send", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="shoot_r", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="output", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="shoot.c::count", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="vision_recv_data_2_shoot", RefreshRate=5, Window=Watched Data 1
