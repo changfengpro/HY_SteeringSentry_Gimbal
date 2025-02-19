@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/application/shoot"
+                "${workspaceFolder}/application/shoot",
+                "${workspaceFolder}/modules/remote"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

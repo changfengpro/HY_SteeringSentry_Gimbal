@@ -25,6 +25,8 @@
         "typeinfo": "c",
         "*.txx": "c",
         "*.rh": "c",
-        "message_center.h": "c"
+        "message_center.h": "c",
+        "remote_control.h": "c",
+        "robot_def.h": "c"
     }
 }
