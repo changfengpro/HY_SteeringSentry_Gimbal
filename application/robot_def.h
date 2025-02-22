@@ -203,6 +203,7 @@ typedef struct
     float Vision_set_r_pitch;  
 
     float yaw_r_motor_angle;
+    float pitch_r_motor_angle;
 
     uint8_t vision_statue;
 

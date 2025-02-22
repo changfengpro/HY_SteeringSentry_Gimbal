@@ -178,7 +178,8 @@ void ShootTask()
     {
         shoot_cmd_recv.shoot_mode = SHOOT_ON;
         shoot_cmd_recv.friction_mode = FRICTION_ON;
-        if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 1.0 && vision_recv_data_2_shoot.target_state == TRACKING)
+        if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 1.0 && vision_recv_data_2_shoot.target_state == TRACKING 
+         && (vision_gimbal_data_recv.Vision_set_r_pitch - vision_gimbal_data_recv.pitch_r_motor_angle) < 0.8)
         {
             shoot_cmd_recv.load_mode = LOAD_BURSTFIRE;
         } 
