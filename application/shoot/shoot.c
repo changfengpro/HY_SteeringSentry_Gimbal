@@ -10,7 +10,7 @@
 
 // static servo_instance *lid; 需要增加弹舱盖
 
-#define DETECTION_MAX_OUTPUT 6000.0f
+#define DETECTION_MAX_OUTPUT 4500.0f
 
 extern Shoot_Ctrl_Cmd_s shoot_cmd_send;      // 传递给发射的控制信息
 static ShootInstance shoot_l, shoot_r; // 左右发射机构实例
@@ -316,7 +316,7 @@ void ShootTask()
             DJIMotorSetRef(shoot_r.friction_r, 0);
             break;
         default: // 当前为了调试设定的默认值4000,因为还没有加入裁判系统无法读取弹速.
-            DJIMotorSetRef(shoot_r.friction_l, 44000);
+            DJIMotorSetRef(shoot_r.friction_l, 44000);  //44000
             DJIMotorSetRef(shoot_r.friction_r, 44000);
             break;
         }
@@ -385,27 +385,27 @@ void LoaderStallDetection()
         if(output[0] < DETECTION_MAX_OUTPUT)
         {
             count[0]--;
-            LIMIT_MIN_MAX(count[0], 0, 10);
+            LIMIT_MIN_MAX(count[0], 0, 30);
         }
         // 如果右拨弹轮的电流值低于最大值，则减少计数器并限制其范围在0到10之间
         if(output[1] < DETECTION_MAX_OUTPUT)
         {
             count[1]--;
-            LIMIT_MIN_MAX(count[1], 0, 10);
+            LIMIT_MIN_MAX(count[1], 0, 30);
         }
     }
 
     // 如果计数器超过100且电流值仍然超过最大值
-    if((count[0] > 10 || count[1] > 10) && (output[0] > DETECTION_MAX_OUTPUT || output[1] > DETECTION_MAX_OUTPUT))
+    if((count[0] > 30 || count[1] > 30) && (output[0] > DETECTION_MAX_OUTPUT || output[1] > DETECTION_MAX_OUTPUT))
     {
         // 如果左拨弹轮计数器超过100，则设置卡弹标志并重置计数器
-        if(count[0] > 10)
+        if(count[0] > 30)
         {
             shoot_l.stall_flag = 1;
             count[0] = 0;
         }
         // 如果右拨弹轮计数器超过100，则设置卡弹标志并重置计数器
-        if(count[1] > 10)
+        if(count[1] > 30)
         {
             shoot_r.stall_flag = 1;
             count[1] = 0;
