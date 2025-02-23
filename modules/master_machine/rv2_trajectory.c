@@ -29,7 +29,7 @@ float t = 0.5f; // 飞行时间
 
 trajectory_target_s trajectory_target;
 
-float test_bias= 0.5;   //s_bias
+float test_bias= 0.3;   //s_bias
 float test_t_bias = 100;
 
 /*

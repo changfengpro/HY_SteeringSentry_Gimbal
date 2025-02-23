@@ -178,8 +178,9 @@ void ShootTask()
     {
         shoot_cmd_recv.shoot_mode = SHOOT_ON;
         shoot_cmd_recv.friction_mode = FRICTION_ON;
-        if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 1.0 && vision_recv_data_2_shoot.target_state == TRACKING 
-         && (vision_gimbal_data_recv.Vision_set_r_pitch - vision_gimbal_data_recv.pitch_r_motor_angle) < 0.8)
+        // if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 1.0 && vision_recv_data_2_shoot.target_state == TRACKING 
+        //  && (vision_gimbal_data_recv.Vision_set_r_pitch - vision_gimbal_data_recv.pitch_r_motor_angle) < 0.8)
+        if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 0.8 && vision_recv_data_2_shoot.target_state == TRACKING )
         {
             shoot_cmd_recv.load_mode = LOAD_BURSTFIRE;
         } 
@@ -316,8 +317,8 @@ void ShootTask()
             DJIMotorSetRef(shoot_r.friction_r, 0);
             break;
         default: // 当前为了调试设定的默认值4000,因为还没有加入裁判系统无法读取弹速.
-            DJIMotorSetRef(shoot_r.friction_l, 44000);  //44000
-            DJIMotorSetRef(shoot_r.friction_r, 44000);
+            DJIMotorSetRef(shoot_r.friction_l, 55000);  //44000
+            DJIMotorSetRef(shoot_r.friction_r, 55000);
             break;
         }
     }
