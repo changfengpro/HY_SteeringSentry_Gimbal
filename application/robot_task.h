@@ -64,7 +64,7 @@ __attribute__((noreturn)) void StartINSTASK(void const *argument)
     {
         // 1kHz
         ins_start = DWT_GetTimeline_ms();
-        // INS_Task();
+        INS_Task();
         ins_dt = DWT_GetTimeline_ms() - ins_start;
         if (ins_dt > 1)
             LOGERROR("[freeRTOS] INS Task is being DELAY! dt = [%f]", &ins_dt);
