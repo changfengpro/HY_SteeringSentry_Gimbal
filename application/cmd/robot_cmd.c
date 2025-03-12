@@ -137,7 +137,7 @@ static void RemoteControlSet()
     if (switch_is_mid(rc_data[TEMP].rc.switch_left)) // 左侧开关状态为[中],视觉模式
     {
         // 待添加,视觉会发来和目标的误差,同样将其转化为total angle的增量进行控制
-
+        
         // ...
     }
     // 左侧开关状态为[下],或视觉未识别到目标,纯遥控器拨杆控制
@@ -325,7 +325,7 @@ void RobotCMDTask()
     else if (switch_is_up(rc_data[TEMP].rc.switch_left)) // 遥控器左侧开关状态为[上],键盘控制
         MouseKeySet();
     else if (switch_is_mid(rc_data[TEMP].rc.switch_left)) // 控器左侧开关状态为[中],视觉导航模式
-    VisionRadaControlSet();
+        VisionRadaControlSet();
 
     EmergencyHandler(); // 处理模块离线和遥控器急停等紧急情况
 
