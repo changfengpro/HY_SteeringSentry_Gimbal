@@ -65,10 +65,12 @@ void ShootInit()
         },
         .motor_type = M3508};
     friction_Ll_config.can_init_config.tx_id = 3,
+    friction_Ll_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_REVERSE;
     shoot_l.friction_l = DJIMotorInit(&friction_Ll_config);
 
     friction_Ll_config.can_init_config.tx_id = 4; // 右摩擦轮,改txid和方向就行
-    friction_Ll_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_REVERSE;
+    friction_Ll_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
+    // friction_Ll_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_REVERSE;
     shoot_l.friction_r = DJIMotorInit(&friction_Ll_config);
 
 
@@ -153,8 +155,11 @@ void ShootInit()
         },
         .motor_type = M2006 // 英雄使用m3508
     };
+
+    loader_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_REVERSE;
     shoot_l.loader = DJIMotorInit(&loader_config);     // 左云台发射机构初始化拨盘电机
     loader_config.can_init_config.can_handle = &hcan2;
+    loader_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
     shoot_r.loader = DJIMotorInit(&loader_config);     // 右云台发射机构初始化拨盘电机
 
     shoot_l.stall_flag = 0; //初始化堵转标志位
@@ -249,7 +254,7 @@ void ShootTask()
             if(shoot_l.stall_flag == 1) 
             {
                 DJIMotorOuterLoop(shoot_l.loader, ANGLE_LOOP);                                              // 切换到角度环
-                DJIMotorSetRef(shoot_l.loader, -(shoot_l.loader->measure.total_angle + ONE_BULLET_DELTA_ANGLE)); // 控制量减少一发弹丸的角度
+                DJIMotorSetRef(shoot_l.loader, (shoot_l.loader->measure.total_angle + ONE_BULLET_DELTA_ANGLE)); // 控制量减少一发弹丸的角度
                 if(enter_count[0] == 20)
                 {
                     shoot_l.stall_flag = 0;
@@ -360,9 +365,9 @@ void LoaderStallDetection()
     // 获取当前时间戳
     detection_start = DWT_GetTimeline_ms();
     // 获取左拨弹轮的实际电流值
-    output[0] = shoot_l.loader->measure.real_current;
+    output[0] = fabs(shoot_l.loader->measure.real_current);
     // 获取右拨弹轮的实际电流值
-    output[1] = shoot_r.loader->measure.real_current;
+    output[1] = fabs(shoot_r.loader->measure.real_current);
 
     // 如果计数器小于等于0
     if(count[0] <= 0 || count[1] <= 0)
