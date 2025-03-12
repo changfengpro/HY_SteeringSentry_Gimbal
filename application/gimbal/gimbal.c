@@ -7,12 +7,12 @@
 #include "bmi088.h"
 
 
-#define YAW_L_INIT_ANGLE -150.0f // 云台初始角度
-#define PITCH_L_INIT_ANGLE -118.0f // 云台初始俯仰角度   -117.0f
+#define YAW_L_INIT_ANGLE 81.0f // 云台初始角度
+#define PITCH_L_INIT_ANGLE 98.0f // 云台初始俯仰角度   -117.0f
 #define YAW_R_INIT_ANGLE -90.0f // 云台初始角度
 #define PITCH_R_INIT_ANGLE -120.5f // 云台初始俯仰角度   -118.0f
-#define PITCH_R_INIT_SET_ANGLE -145.0f // 云台初始俯仰角度   -118.0f
 #define PITCH_R_MIN 28 // 右云台经IMU测出下限时的pitch角度 25.3
+#define PITCH_L_MIN 28
 #define YAW_COEFF_REMOTE 0.036363636f //云台遥控系数
 #define PITCH_COEFF_REMOTE 0.134848485f //云台俯仰遥控系数
 #define YAW_VISION_OFFSET 12
@@ -133,18 +133,24 @@ void GimbalInit()
  */
 static void VisionAngleCalc()
 {   
+    vision_gimbal_data.Vision_l_yaw = yaw_l_motor->measure.total_angle - YAW_L_INIT_ANGLE;
+    vision_gimbal_data.Vision_l_pitch = pitch_l_motor->measure.total_angle - PITCH_L_INIT_ANGLE;
+
     // vision_gimbal_data.Vision_r_yaw = gimbal_IMU_data->Yaw + yaw_r_motor->measure.total_angle - YAW_R_INIT_ANGLE;
 
     vision_gimbal_data.Vision_r_yaw = yaw_r_motor->measure.total_angle - YAW_R_INIT_ANGLE;
+    vision_gimbal_data.Vision_r_pitch = pitch_r_motor->measure.total_angle  - PITCH_R_INIT_ANGLE;
 
-    vision_gimbal_data.Vision_r_pitch = pitch_r_motor->measure.total_angle + PITCH_R_MIN - PITCH_R_INIT_ANGLE;
+    vision_gimbal_data.Vision_set_l_yaw = vision_gimbal_data.Vision_l_yaw_tar + YAW_L_INIT_ANGLE;
+    vision_gimbal_data.Vision_set_l_pitch = vision_gimbal_data.Vision_l_pitch_tar + PITCH_L_INIT_ANGLE - PITCH_L_MIN;
 
-    vision_gimbal_data.Vision_set_r_yaw = vision_gimbal_data.Vision_r_yaw_tar + YAW_R_INIT_ANGLE - gimbal_IMU_data->Yaw;
+    // vision_gimbal_data.Vision_set_r_yaw = vision_gimbal_data.Vision_r_yaw_tar + YAW_R_INIT_ANGLE - gimbal_IMU_data->Yaw;
+    vision_gimbal_data.Vision_set_r_yaw = vision_gimbal_data.Vision_r_yaw_tar + YAW_R_INIT_ANGLE;
     vision_gimbal_data.Vision_set_r_pitch = vision_gimbal_data.Vision_r_pitch_tar + PITCH_R_INIT_ANGLE - PITCH_R_MIN;
 
 }
 
-   static float temp_statue;
+static float temp_statue;
 
 /* 机器人云台控制核心任务,后续考虑只保留IMU控制,不再需要电机的反馈 */
 void GimbalTask()
@@ -155,11 +161,17 @@ void GimbalTask()
     SubGetMessage(gimbal_sub, &gimbal_cmd_recv);
     temp_statue = gimbal_cmd_recv.gimbal_mode;
     if(gimbal_cmd_recv.gimbal_mode == GIMBAL_VISION)
-    {
+    {   
+        vision_gimbal_data.Vision_l_yaw_tar = gimbal_cmd_recv.yaw;
+        vision_gimbal_data.Vision_l_pitch_tar = gimbal_cmd_recv.pitch;
+        vision_gimbal_data.yaw_r_motor_angle = yaw_l_motor->measure.total_angle;
+        vision_gimbal_data.pitch_r_motor_angle = pitch_l_motor->measure.total_angle;
+
         vision_gimbal_data.Vision_r_yaw_tar = gimbal_cmd_recv.yaw;
         vision_gimbal_data.Vision_r_pitch_tar = gimbal_cmd_recv.pitch;
         vision_gimbal_data.yaw_r_motor_angle = yaw_r_motor->measure.total_angle;
         vision_gimbal_data.pitch_r_motor_angle = pitch_r_motor->measure.total_angle;
+
         vision_gimbal_data.vision_statue = GIMBAL_VISION;
     }
     else
@@ -227,7 +239,7 @@ void GimbalTask()
         DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, MOTOR_FEED);
 
-        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_yaw, 22, 84);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_yaw, 22, 130);
         LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_pitch, 58, 90);
 
         LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, -180, 0);
@@ -235,6 +247,8 @@ void GimbalTask()
 
         DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw);
         DJIMotorSetRef(pitch_r_motor, vision_gimbal_data.Vision_set_r_pitch);
+        DJIMotorSetRef(yaw_l_motor, vision_gimbal_data.Vision_set_l_yaw);
+        DJIMotorSetRef(pitch_l_motor, vision_gimbal_data.Vision_set_l_pitch);
 
     default:
         break;

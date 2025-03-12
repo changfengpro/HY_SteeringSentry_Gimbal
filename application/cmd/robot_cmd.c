@@ -137,7 +137,7 @@ static void RemoteControlSet()
     if (switch_is_mid(rc_data[TEMP].rc.switch_left)) // 左侧开关状态为[中],视觉模式
     {
         // 待添加,视觉会发来和目标的误差,同样将其转化为total angle的增量进行控制
-
+        
         // ...
     }
     // 左侧开关状态为[下],或视觉未识别到目标,纯遥控器拨杆控制
@@ -148,11 +148,6 @@ static void RemoteControlSet()
         gimbal_cmd_send.pitch += 0.0005f * (float)rc_data[TEMP].rc.rocker_l1;
         LIMIT_MIN_MAX(gimbal_cmd_send.pitch,PITCH_L_SEND_MIN,PITCH_L_SEND_MAX); // 限位
     }
-    // 云台软件限位
-
-    // 底盘参数,目前没有加入小陀螺(调试似乎暂时没有必要),系数需要调整
-    chassis_cmd_send.vx = 10.0f * (float)rc_data[TEMP].rc.rocker_r_; // _水平方向
-    chassis_cmd_send.vy = 10.0f * (float)rc_data[TEMP].rc.rocker_r1; // 1数值方向
 
     // 发射参数
     if (switch_is_up(rc_data[TEMP].rc.switch_right)) // 右侧开关状态[上],弹舱打开
@@ -179,13 +174,21 @@ static void RemoteControlSet()
 //  *
 //  */
 static void VisionRadaControlSet()
-{
+{   
+    
     gimbal_cmd_send.gimbal_mode = GIMBAL_VISION;    //云台自瞄模式
-    gimbal_cmd_send.yaw = vision_recv_data->yaw;
-    gimbal_cmd_send.pitch = vision_recv_data->pitch;
-    if(vision_recv_data->fire_mode == NO_FIRE)  shoot_cmd_send.friction_mode = FRICTION_OFF;
-    if(vision_recv_data->fire_mode == AUTO_FIRE) shoot_cmd_send.friction_mode = FRICTION_ON;
+    // gimbal_cmd_send.yaw = vision_recv_data->yaw;
+    // gimbal_cmd_send.pitch = vision_recv_data->pitch;
+    gimbal_cmd_send.yaw += -0.002f * (float)rc_data[TEMP].rc.rocker_l_;
+    gimbal_cmd_send.pitch += 0.0005f * (float)rc_data[TEMP].rc.rocker_l1;
+    LIMIT_MIN_MAX(gimbal_cmd_send.pitch,PITCH_L_SEND_MIN,PITCH_L_SEND_MAX); // 限位
+    // if(vision_recv_data->fire_mode == NO_FIRE)  shoot_cmd_send.friction_mode = FRICTION_OFF;
+    // if(vision_recv_data->fire_mode == AUTO_FIRE) shoot_cmd_send.friction_mode = FRICTION_ON;
+    shoot_cmd_send.shoot_mode = SHOOT_ON;
+    shoot_cmd_send.friction_mode = FRICTION_ON;
+    shoot_cmd_send.load_mode = LOAD_BURSTFIRE;
     shoot_cmd_send.shoot_rate = 10;
+    
     
 }
 
@@ -325,7 +328,7 @@ void RobotCMDTask()
     else if (switch_is_up(rc_data[TEMP].rc.switch_left)) // 遥控器左侧开关状态为[上],键盘控制
         MouseKeySet();
     else if (switch_is_mid(rc_data[TEMP].rc.switch_left)) // 控器左侧开关状态为[中],视觉导航模式
-    VisionRadaControlSet();
+        VisionRadaControlSet();
 
     EmergencyHandler(); // 处理模块离线和遥控器急停等紧急情况
 
