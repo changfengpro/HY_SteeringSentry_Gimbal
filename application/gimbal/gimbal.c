@@ -133,7 +133,10 @@ void GimbalInit()
  */
 static void VisionAngleCalc()
 {   
-    vision_gimbal_data.Vision_r_yaw = gimbal_IMU_data->Yaw + yaw_r_motor->measure.total_angle - YAW_R_INIT_ANGLE;
+    // vision_gimbal_data.Vision_r_yaw = gimbal_IMU_data->Yaw + yaw_r_motor->measure.total_angle - YAW_R_INIT_ANGLE;
+
+    vision_gimbal_data.Vision_r_yaw = yaw_r_motor->measure.total_angle - YAW_R_INIT_ANGLE;
+
     vision_gimbal_data.Vision_r_pitch = pitch_r_motor->measure.total_angle + PITCH_R_MIN - PITCH_R_INIT_ANGLE;
 
     vision_gimbal_data.Vision_set_r_yaw = vision_gimbal_data.Vision_r_yaw_tar + YAW_R_INIT_ANGLE - gimbal_IMU_data->Yaw;
@@ -224,6 +227,8 @@ void GimbalTask()
         DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, MOTOR_FEED);
 
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_yaw, 22, 84);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_pitch, 58, 90);
 
         LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, -180, 0);
         LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_pitch, -180, -125);
