@@ -254,7 +254,7 @@ void ShootTask()
             if(shoot_l.stall_flag == 1) 
             {
                 DJIMotorOuterLoop(shoot_l.loader, ANGLE_LOOP);                                              // 切换到角度环
-                DJIMotorSetRef(shoot_l.loader, -(shoot_l.loader->measure.total_angle + ONE_BULLET_DELTA_ANGLE)); // 控制量减少一发弹丸的角度
+                DJIMotorSetRef(shoot_l.loader, (shoot_l.loader->measure.total_angle + ONE_BULLET_DELTA_ANGLE)); // 控制量减少一发弹丸的角度
                 if(enter_count[0] == 20)
                 {
                     shoot_l.stall_flag = 0;
