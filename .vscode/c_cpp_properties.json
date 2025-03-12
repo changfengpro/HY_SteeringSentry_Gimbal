@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/application/shoot",
-                "${workspaceFolder}/modules/remote"
+                "${workspaceFolder}/modules/remote",
+                "${workspaceFolder}/modules/motor/DMmotor"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

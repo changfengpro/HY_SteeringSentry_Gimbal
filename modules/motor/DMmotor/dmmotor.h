@@ -1,3 +1,12 @@
+/*
+ * @Description: 
+ * @Author: changfeng
+ * @brief: 
+ * @version: 
+ * @Date: 2025-02-13 18:23:53
+ * @LastEditors:  
+ * @LastEditTime: 2025-03-13 01:23:41
+ */
 #ifndef DMMOTOR_H
 #define DMMOTOR_H
 #include <stdint.h>
@@ -26,6 +35,8 @@ typedef struct
     float T_Mos;
     float T_Rotor;
     int32_t total_round;
+    float total_angle;
+    float single_angle;
 }DM_Motor_Measure_s;
 
 typedef struct
