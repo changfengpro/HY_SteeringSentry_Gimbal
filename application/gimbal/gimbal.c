@@ -113,14 +113,13 @@ void GimbalInit()
     };  
 
     Motor_Init_Config_s DMmotor_Motor_Config = {
-    .controller_setting_init_config.angle_feedback_source = MOTOR_FEED,
+    .controller_setting_init_config.angle_feedback_source = OTHER_FEED,
     .controller_setting_init_config.close_loop_type = ANGLE_LOOP,
     .controller_setting_init_config.feedback_reverse_flag = FEEDBACK_DIRECTION_NORMAL,
     .controller_setting_init_config.feedforward_flag = SPEED_FEEDFORWARD,
     .controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_NORMAL,
     .controller_setting_init_config.outer_loop_type = ANGLE_LOOP,
     .controller_setting_init_config.speed_feedback_source = MOTOR_FEED,
-    .controller_param_init_config.other_angle_feedback_ptr = &gimbal_base_angle_feed_ptr,
     .can_init_config.can_handle = &hcan1,
     // .can_init_config.can_module_callback = &DMMotorLostCallback,
     // .can_init_config.id = (void *)0x00,
@@ -130,22 +129,24 @@ void GimbalInit()
 
     .controller_param_init_config = {
 
+        .other_angle_feedback_ptr = &gimbal_IMU_data->YawTotalAngle,
+
         .angle_PID = {
-            .Kp = 0.3,
-            .Ki = 0,
+            .Kp = 0.06,
+            .Ki = 0.005,
             .Kd = 0,
-            .MaxOut = 30,
+            .MaxOut = 30,   // 30
             .IntegralLimit = 15,
-            .Improve = PID_Integral_Limit | PID_DerivativeFilter
+            .Improve = PID_Integral_Limit | PID_Derivative_On_Measurement
         },
 
         .speed_PID = {
-            .Kp = 5,
-            .Ki = 0.1,
+            .Kp = 0.1,
+            .Ki = 0.05,
             .Kd = 0,
-            .MaxOut = 50,
+            .MaxOut = 80,   // 50
             .IntegralLimit = 15,
-            .IntegralLimit = PID_Integral_Limit | PID_DerivativeFilter
+            .IntegralLimit = PID_Integral_Limit | PID_Derivative_On_Measurement
         }
     }
     };
@@ -233,7 +234,7 @@ void GimbalTask()
     // 获取云台控制数据
     // 后续增加未收到数据的处理
     SubGetMessage(gimbal_sub, &gimbal_cmd_recv);
-    YawAngleCalculate();
+    // YawAngleCalculate();
     temp_statue = gimbal_cmd_recv.gimbal_mode;
     if(gimbal_cmd_recv.gimbal_mode == GIMBAL_VISION)
     {   
@@ -309,6 +310,7 @@ void GimbalTask()
         DJIMotorEnable(pitch_l_motor);
         DJIMotorEnable(yaw_r_motor);
         DJIMotorEnable(pitch_r_motor);
+        DMMotorEnable(Gimbal_Base);
         DJIMotorChangeFeed(yaw_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(yaw_r_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, MOTOR_FEED);
@@ -324,6 +326,7 @@ void GimbalTask()
         DJIMotorSetRef(pitch_r_motor, vision_gimbal_data.Vision_set_r_pitch);
         DJIMotorSetRef(yaw_l_motor, vision_gimbal_data.Vision_set_l_yaw);
         DJIMotorSetRef(pitch_l_motor, vision_gimbal_data.Vision_set_l_pitch);
+        DMMotorSetRef (Gimbal_Base, gimbal_cmd_recv.gimbal_angle);
 
     default:
         break;

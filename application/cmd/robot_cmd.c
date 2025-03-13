@@ -149,7 +149,8 @@ static void RemoteControlSet()
         
         gimbal_cmd_send.yaw += 0.002f * (float)rc_data[TEMP].rc.rocker_l_;
         gimbal_cmd_send.pitch += 0.0005f * (float)rc_data[TEMP].rc.rocker_l1;
-        LIMIT_MIN_MAX(gimbal_cmd_send.pitch,PITCH_L_SEND_MIN,PITCH_L_SEND_MAX); // 限位
+        gimbal_cmd_send.gimbal_angle += -0.001 * (float)rc_data[TEMP].rc.rocker_l_; //云台旋转速度
+        LIMIT_MIN_MAX(gimbal_cmd_send.pitch, PITCH_L_SEND_MIN, PITCH_L_SEND_MAX); // 限位
     }
 
     // 发射参数
@@ -184,6 +185,7 @@ static void VisionRadaControlSet()
     // gimbal_cmd_send.pitch = vision_recv_data->pitch;
     gimbal_cmd_send.yaw += -0.002f * (float)rc_data[TEMP].rc.rocker_l_;
     gimbal_cmd_send.pitch += 0.0005f * (float)rc_data[TEMP].rc.rocker_l1;
+    gimbal_cmd_send.gimbal_angle += -0.001 * (float)rc_data[TEMP].rc.rocker_l_; //云台旋转速度
     LIMIT_MIN_MAX(gimbal_cmd_send.pitch,PITCH_L_SEND_MIN,PITCH_L_SEND_MAX); // 限位
     // if(vision_recv_data->fire_mode == NO_FIRE)  shoot_cmd_send.friction_mode = FRICTION_OFF;
     // if(vision_recv_data->fire_mode == AUTO_FIRE) shoot_cmd_send.friction_mode = FRICTION_ON;
