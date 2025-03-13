@@ -1,6 +1,7 @@
 #include "gimbal.h"
 #include "robot_def.h"
 #include "dji_motor.h"
+#include "dmmotor.h"
 #include "ins_task.h"
 #include "message_center.h"
 #include "general_def.h"
@@ -19,6 +20,7 @@
 
 static attitude_t *gimbal_IMU_data; // 云台IMU数据
 static DJIMotorInstance *yaw_l_motor, *yaw_r_motor, *pitch_l_motor, *pitch_r_motor; // 云台电机实例
+static DMMotorInstance  *Gimbal_Base;
 
 static Publisher_t *gimbal_pub;                   // 云台应用消息发布者(云台反馈给cmd)
 static Subscriber_t *gimbal_sub;                  // cmd控制消息订阅者
@@ -26,13 +28,14 @@ static Publisher_t *vision_gimbal_pub; //云台视觉信息
 static Gimbal_Upload_Data_s gimbal_feedback_data; // 回传给cmd的云台状态信息
 static Gimbal_Ctrl_Cmd_s gimbal_cmd_recv;         // 来自cmd的控制信息
 static Vision_Gimbal_Data_s vision_gimbal_data; // 自瞄时云台数据(为方便计算，定义了相对角度)
-
+static float Yaw_single_angle, Yaw_angle_sum;
 // static BMI088Instance *bmi088; // 云台IMU
 
 
 void GimbalInit()
 {   
     gimbal_IMU_data = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源
+    float gimbal_base_angle_feed_ptr = gimbal_IMU_data->YawTotalAngle;
     // YAW
     Motor_Init_Config_s yaw_config = {
         .can_init_config = {
@@ -109,6 +112,44 @@ void GimbalInit()
         .motor_type = GM6020,
     };  
 
+    Motor_Init_Config_s DMmotor_Motor_Config = {
+    .controller_setting_init_config.angle_feedback_source = MOTOR_FEED,
+    .controller_setting_init_config.close_loop_type = ANGLE_LOOP,
+    .controller_setting_init_config.feedback_reverse_flag = FEEDBACK_DIRECTION_NORMAL,
+    .controller_setting_init_config.feedforward_flag = SPEED_FEEDFORWARD,
+    .controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_NORMAL,
+    .controller_setting_init_config.outer_loop_type = ANGLE_LOOP,
+    .controller_setting_init_config.speed_feedback_source = MOTOR_FEED,
+    .controller_param_init_config.other_angle_feedback_ptr = &gimbal_base_angle_feed_ptr,
+    .can_init_config.can_handle = &hcan1,
+    // .can_init_config.can_module_callback = &DMMotorLostCallback,
+    // .can_init_config.id = (void *)0x00,
+    .can_init_config.rx_id = 0x10,
+    .can_init_config.tx_id = 0x20F,
+
+
+    .controller_param_init_config = {
+
+        .angle_PID = {
+            .Kp = 0.3,
+            .Ki = 0,
+            .Kd = 0,
+            .MaxOut = 30,
+            .IntegralLimit = 15,
+            .Improve = PID_Integral_Limit | PID_DerivativeFilter
+        },
+
+        .speed_PID = {
+            .Kp = 5,
+            .Ki = 0.1,
+            .Kd = 0,
+            .MaxOut = 50,
+            .IntegralLimit = 15,
+            .IntegralLimit = PID_Integral_Limit | PID_DerivativeFilter
+        }
+    }
+    };
+
     /*
         抬头参数
     */
@@ -121,12 +162,45 @@ void GimbalInit()
     pitch_config.can_init_config.can_handle = &hcan2;
     pitch_r_motor = DJIMotorInit(&pitch_config);
 
+    Gimbal_Base = DMMotorInit(&DMmotor_Motor_Config);
 
     gimbal_pub = PubRegister("gimbal_feed", sizeof(Gimbal_Upload_Data_s));
     gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
     vision_gimbal_pub = PubRegister("vision_gimbal_data",sizeof(Vision_Gimbal_Data_s));
 }
 
+
+/**
+ * @brief 母云台达妙电机总角度计算
+ * @return 
+ */
+static void YawAngleCalculate()
+{
+    static float angle, last_angle, temp, rad_sum;
+    angle = Gimbal_Base->measure.position; // 从云台获取的当前yaw电机角度
+    
+    if(fabs(angle - last_angle) > 0.0001)
+    {
+        if((angle - last_angle) < -12.5)
+        {
+            rad_sum += 25 + angle - last_angle;
+        }
+        else if((angle - last_angle) >  12.5)
+        {
+            rad_sum += 25 + last_angle - angle;
+        }
+        else
+        {
+            rad_sum += angle - last_angle;
+        }
+    }
+    Yaw_angle_sum = rad_sum * RAD_2_DEGREE;
+    temp = fmodf(Yaw_angle_sum, 360.0);
+    Yaw_single_angle = fabs(temp);
+    Gimbal_Base->measure.single_angle = Yaw_single_angle;
+    Gimbal_Base->measure.total_angle = Yaw_angle_sum;
+    last_angle = angle;
+}
 
 /**
  * @brief 角度计算
@@ -159,6 +233,7 @@ void GimbalTask()
     // 获取云台控制数据
     // 后续增加未收到数据的处理
     SubGetMessage(gimbal_sub, &gimbal_cmd_recv);
+    YawAngleCalculate();
     temp_statue = gimbal_cmd_recv.gimbal_mode;
     if(gimbal_cmd_recv.gimbal_mode == GIMBAL_VISION)
     {   

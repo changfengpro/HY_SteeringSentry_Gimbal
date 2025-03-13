@@ -5,7 +5,10 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/application/shoot",
-                "${workspaceFolder}/modules/remote"
+                "${workspaceFolder}/modules/remote",
+                "${workspaceFolder}/modules/motor/DMmotor",
+                "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
+                "${workspaceFolder}/modules/referee_transport"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

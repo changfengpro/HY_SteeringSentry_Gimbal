@@ -93,6 +93,7 @@ modules/referee/crc_ref.c \
 modules/referee/rm_referee.c \
 modules/referee/referee_UI.c \
 modules/referee/referee_task.c \
+modules/referee_transport/referee_transport.c \
 modules/remote/remote_control.c \
 modules/super_cap/super_cap.c \
 modules/can_comm/can_comm.c \
@@ -251,6 +252,7 @@ C_INCLUDES =  \
 -Imodules/motor \
 -Imodules/oled \
 -Imodules/referee \
+-Imodules/referee_transport \
 -Imodules/remote \
 -Imodules/super_cap \
 -Imodules/can_comm \

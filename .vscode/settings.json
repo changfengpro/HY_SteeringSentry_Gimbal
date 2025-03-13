@@ -27,6 +27,7 @@
         "*.rh": "c",
         "message_center.h": "c",
         "remote_control.h": "c",
-        "robot_def.h": "c"
+        "robot_def.h": "c",
+        "stdint.h": "c"
     }
 }
