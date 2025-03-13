@@ -30,6 +30,7 @@ static void DMMotorSetMode(DMMotor_Mode_e cmd, DMMotorInstance *motor)
     memset(motor->motor_can_instace->tx_buff, 0xff, 7);  // 发送电机指令的时候前面7bytes都是0xff
     motor->motor_can_instace->tx_buff[7] = (uint8_t)cmd; // 最后一位是命令id
     CANTransmit(motor->motor_can_instace, 1);
+    memset(motor->motor_can_instace->tx_buff, 0, 8);    //清空
 }
 
 static void DMMotorDecode(CANInstance *motor_can)
@@ -115,6 +116,14 @@ void DMMotorOuterLoop(DMMotorInstance *motor, Closeloop_Type_e type)
     motor->motor_settings.outer_loop_type = type;
 }
 
+void DMMotorChangeFeed(DMMotorInstance *motor, Closeloop_Type_e loop, Feedback_Source_e type)
+{
+    if(loop == ANGLE_LOOP)
+        motor->motor_settings.angle_feedback_source = type;
+    if(loop == SPEED_LOOP)
+        motor->motor_settings.speed_feedback_source = type;
+}
+
 
 //@Todo: 目前只实现了力控，更多位控PID等请自行添加
 void DMMotorTask(void const *argument)
@@ -157,11 +166,15 @@ void DMMotorTask(void const *argument)
         if((setting->close_loop_type & ANGLE_LOOP) && (setting->outer_loop_type & ANGLE_LOOP))
         {
             if(setting->angle_feedback_source == OTHER_FEED)
+            {
                 pid_measure = *motor->other_angle_feedback_ptr;
+                motor->measure.other_angle = pid_measure;
+            }
             else
                 pid_measure = motor->measure.total_angle;
 
             pid_ref = PIDCalculate(&motor->angle_PID, pid_measure, pid_ref);
+            
         }
 
         set = pid_ref;

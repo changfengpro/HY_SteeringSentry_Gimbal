@@ -3,9 +3,9 @@
  * @Author: changfeng
  * @brief: 
  * @version: 
- * @Date: 2025-02-13 18:23:53
+ * @Date: 2025-03-13 18:59:05
  * @LastEditors:  
- * @LastEditTime: 2025-03-13 01:23:41
+ * @LastEditTime: 2025-03-13 21:13:26
  */
 #ifndef DMMOTOR_H
 #define DMMOTOR_H
@@ -37,6 +37,7 @@ typedef struct
     int32_t total_round;
     float total_angle;
     float single_angle;
+    float other_angle;
 }DM_Motor_Measure_s;
 
 typedef struct
@@ -81,7 +82,10 @@ void DMMotorOuterLoop(DMMotorInstance *motor,Closeloop_Type_e closeloop_type);
 
 void DMMotorEnable(DMMotorInstance *motor);
 
+void DMMotorChangeFeed(DMMotorInstance *motor, Closeloop_Type_e loop, Feedback_Source_e type);
+
 void DMMotorStop(DMMotorInstance *motor);
 void DMMotorCaliEncoder(DMMotorInstance *motor);
 void DMMotorControlInit();
+
 #endif // !DMMOTOR

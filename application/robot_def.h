@@ -169,6 +169,7 @@ typedef struct
     float yaw;
     float pitch;
     float chassis_rotate_wz;
+    float gimbal_angle; //母云台角度
 
     gimbal_mode_e gimbal_mode;
 } Gimbal_Ctrl_Cmd_s;
