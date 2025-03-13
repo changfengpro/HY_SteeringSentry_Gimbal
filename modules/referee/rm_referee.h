@@ -22,7 +22,7 @@ typedef struct
 typedef struct
 {
 	referee_id_t referee_id;
-
+	
 	xFrameHeader FrameHeader; // 接收到的帧头信息
 	uint16_t CmdID;
 	ext_game_state_t GameState;							   // 0x0001

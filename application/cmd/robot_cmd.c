@@ -11,6 +11,7 @@
 #include "bmi088.h"
 #include "motor_def.h"
 #include "cmd_vel.h"
+#include "referee_transport.h"
 // bsp
 #include "bsp_dwt.h"
 #include "bsp_log.h"
@@ -34,6 +35,7 @@ static Chassis_Ctrl_Cmd_s chassis_cmd_send;      // 发送给底盘应用的信�
 static Chassis_Upload_Data_s chassis_fetch_data; // 从底盘应用接收的反馈信息信息,底盘功率枪口热量与底盘运动状态等
 
 static RC_ctrl_t *rc_data;              // 遥控器数据,初始化时返回
+static referee_info_t *referee_recv_data; // 裁判系统数据
 static Radar_Data *radar_data;          //导航数据，初始化时返回
 static Vision_Recv_s *vision_recv_data; // 视觉接收数据指针,初始化时返回
 static Vision_Send_s vision_send_data;  // 视觉发送数据
@@ -59,6 +61,7 @@ void RobotCMDInit()
     rc_data = RemoteControlInit(&huart5);   // 修改为对应串口,注意如果是自研板dbus协议串口需选用添加了反相器的那个
     vision_recv_data = VisionInit(&huart1); // 视觉通信串口
     radar_data = CmdVelControlInit(&huart7); // 导航控制
+    referee_recv_data = RefereeInit(&huart10);
     // radar_data = CmdVelControlInit(&huart1);
     // vision_recv_data = VisionInit(&huart7);
     gimbal_cmd_pub = PubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
