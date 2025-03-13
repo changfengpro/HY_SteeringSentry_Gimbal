@@ -162,6 +162,7 @@ void GimbalInit()
     pitch_config.can_init_config.can_handle = &hcan2;
     pitch_r_motor = DJIMotorInit(&pitch_config);
 
+    Gimbal_Base = DMMotorInit(&DMmotor_Motor_Config);
 
     gimbal_pub = PubRegister("gimbal_feed", sizeof(Gimbal_Upload_Data_s));
     gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));

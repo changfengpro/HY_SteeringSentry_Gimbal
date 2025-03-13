@@ -5,13 +5,13 @@
  * @version: 
  * @Date: 2025-03-13 06:34:23
  * @LastEditors:  
- * @LastEditTime: 2025-03-13 09:00:25
+ * @LastEditTime: 2025-03-13 14:54:28
  */
 #include "referee_transport.h"
 
 #define START_BYTE 0xAA
 #define END_BYTE 0x55
-#define REFEREE_DATA_CONTROL_FRAME_SIZE 139U
+#define REFEREE_DATA_CONTROL_FRAME_SIZE sizeof(referee_info_t)
 
 static referee_info_t referee_data;
 static uint8_t referee_init_flag;
@@ -20,12 +20,14 @@ static uint8_t referee_init_flag;
 static USARTInstance *referee_data_usart_instance;  // 裁判系统数据转发串口实例
 static DaemonInstance *referee_data_daemo_instance; // 裁判系统数据转发进程守护实例
 
+float watch_size;
+
 /**
  * @brief 裁判系统数据转发解析函数
  * @return 
  */
 static void RefereeDataParse(const uint8_t *referee_data_buf)
-{
+{   
     if(referee_data_buf[0] != START_BYTE || referee_data_buf[150] != END_BYTE)
     {
         LOGWARNING("[referee] Packet format error");
@@ -41,7 +43,7 @@ static void RefereeDataParse(const uint8_t *referee_data_buf)
 
     if(checksum == referee_data_buf[149])   // 校验正确
     {
-        memcpy(&referee_data, referee_data_buf[1], REFEREE_DATA_CONTROL_FRAME_SIZE);
+        memcpy(&referee_data, &referee_data_buf[1], REFEREE_DATA_CONTROL_FRAME_SIZE);
     }
 }
 
@@ -76,7 +78,7 @@ referee_info_t *RefereeDataTransportInit(UART_HandleTypeDef *referee_data_usart_
     USART_Init_Config_s config;
     config.module_callback = RefereeDataRxCallback;
     config.usart_handle = referee_data_usart_handle;
-    config.recv_buff_size = REFEREE_DATA_CONTROL_FRAME_SIZE;
+    config.recv_buff_size = (REFEREE_DATA_CONTROL_FRAME_SIZE + 12);
     referee_data_usart_instance = USARTRegister(&config);
     // 进行进程守护的注册，用于定时检查串口是否正常工作
     Daemon_Init_Config_s daemo_conf = {
