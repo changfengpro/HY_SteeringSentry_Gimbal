@@ -118,7 +118,7 @@ void GimbalInit()
     .controller_setting_init_config.feedback_reverse_flag = FEEDBACK_DIRECTION_NORMAL,
     .controller_setting_init_config.feedforward_flag = SPEED_FEEDFORWARD,
     .controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_NORMAL,
-    .controller_setting_init_config.outer_loop_type = ANGLE_LOOP,
+    .controller_setting_init_config.outer_loop_type = ANGLE_LOOP | SPEED_LOOP,
     .controller_setting_init_config.speed_feedback_source = MOTOR_FEED,
     .can_init_config.can_handle = &hcan1,
     // .can_init_config.can_module_callback = &DMMotorLostCallback,
@@ -132,19 +132,20 @@ void GimbalInit()
         .other_angle_feedback_ptr = &gimbal_IMU_data->YawTotalAngle,
 
         .angle_PID = {
-            .Kp = 0.06,
-            .Ki = 0.005,
+            .Kp = 0.035, // 0.06
+            .Ki = 0.001, // 0.05
             .Kd = 0,
             .MaxOut = 30,   // 30
-            .IntegralLimit = 15,
-            .Improve = PID_Integral_Limit | PID_Derivative_On_Measurement
+            .IntegralLimit = 10,
+            .Output_LPF_RC = 0.00649999983,
+            .Improve = PID_Integral_Limit | PID_Derivative_On_Measurement | PID_OutputFilter
         },
 
         .speed_PID = {
-            .Kp = 0.1,
-            .Ki = 0.05,
+            .Kp = 0.8,
+            .Ki = 0.07,
             .Kd = 0,
-            .MaxOut = 80,   // 50
+            .MaxOut = 30,   // 50
             .IntegralLimit = 15,
             .IntegralLimit = PID_Integral_Limit | PID_Derivative_On_Measurement
         }

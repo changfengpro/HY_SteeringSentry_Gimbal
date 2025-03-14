@@ -162,6 +162,7 @@ void DMMotorTask(void const *argument)
         // motor->motor_can_instace->tx_buff[6] = (uint8_t)(((motor_send_mailbox.Kd & 0xF) << 4) | (motor_send_mailbox.torque_des >> 8));
         // motor->motor_can_instace->tx_buff[7] = (uint8_t)(motor_send_mailbox.torque_des);
 
+        
         /*位置环计算*/
         if((setting->close_loop_type & ANGLE_LOOP) && (setting->outer_loop_type & ANGLE_LOOP))
         {

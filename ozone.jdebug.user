@@ -1,33 +1,33 @@
 
 
 
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:226:9, State=BP_STATE_DISABLED
-GraphedExpression="(vision_gimbal_data).Vision_set_r_pitch", Color=#e56a6f, Show=0
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:233:1, State=BP_STATE_DISABLED
+GraphedExpression="((Gimbal_Base)->angle_PID).Measure", Color=#e56a6f
+GraphedExpression="(Gimbal_Base)->pid_ref", Color=#35792b
+OpenDocument="dmmotor.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/motor/DMmotor/dmmotor.c", Line=160
 OpenDocument="main.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/Core/Src/main.c", Line=71
 OpenDocument="startup_stm32h723xx.s", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/startup_stm32h723xx.s", Line=50
-OpenDocument="shoot.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/shoot/shoot.c", Line=162
-OpenDocument="gimbal.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c", Line=222
-OpenDocument="robot_cmd.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/cmd/robot_cmd.c", Line=119
+OpenDocument="robot_cmd.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/cmd/robot_cmd.c", Line=116
 OpenDocument="stm32h7xx_hal_fdcan.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_fdcan.c", Line=3351
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=2, w=602, h=89, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=749, h=109, TabPos=0, TopOfStack=0, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=549, h=321, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=602, h=74, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=749, h=99, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=693, h=264, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x240043E7
-OpenWindow="Local Data", DockArea=RIGHT, x=0, y=1, w=602, h=89, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Local Data", DockArea=RIGHT, x=0, y=1, w=749, h=109, TabPos=1, TopOfStack=1, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=1, w=549, h=349, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Data Sampling", DockArea=BOTTOM, x=1, y=0, w=734, h=264, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=RIGHT, x=0, y=3, w=602, h=406, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="254;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="467;-6", CodeGraphLegendShown=0, CodeGraphLegendPosition="442;0"
+OpenWindow="Timeline", DockArea=RIGHT, x=0, y=2, w=749, h=439, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="0;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="603;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="578;0"
 OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=411, h=264, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
-TableHeader="Local Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type";"Scope"], ColWidths=[154;100;100;100;231;100]
-TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[100;100;100;100;100;102]
-TableHeader="Source Files", SortCol="File", SortOrder="DESCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[239;100;100;100;875]
-TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" (vision_gimbal_data).Vision_set_r_pitch"], ColWidths=[100;100;100]
+TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[100;100;100;100;100;249]
+TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[239;100;100;100;875]
+TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" ((Gimbal_Base)->angle_PID).Measure";" (Gimbal_Base)->pid_ref"], ColWidths=[100;100;100;100]
 TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[100;100;100;100;100;100;100;100;100]
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
 TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[163;145;126;100]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
+TableHeader="Local Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type";"Scope"], ColWidths=[154;100;100;100;231;100]
 TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;359]
 WatchedExpression="yaw_r_motor", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="vision_gimbal_data", RefreshRate=5, Window=Watched Data 1
@@ -47,3 +47,4 @@ WatchedExpression="gimbal_cmd_send", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="shoot_cmd_send", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="shoot_cmd_recv", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="shoot_l", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="Gimbal_Base", RefreshRate=5, Window=Watched Data 1
