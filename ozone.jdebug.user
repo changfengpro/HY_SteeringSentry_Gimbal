@@ -1,27 +1,30 @@
 
 
 
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:226:9, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:237:1, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/cmd_vel/cmd_vel.c:65, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/cmd_vel/cmd_vel.c:70:9, State=BP_STATE_DISABLED
 GraphedExpression="(vision_gimbal_data).Vision_set_r_pitch", Color=#e56a6f, Show=0
+OpenDocument="dmmotor.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/motor/DMmotor/dmmotor.c", Line=85
+OpenDocument="referee_transport.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/referee_transport/referee_transport.c", Line=15
+OpenDocument="cmd_vel.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/cmd_vel/cmd_vel.c", Line=6
 OpenDocument="main.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/Core/Src/main.c", Line=71
-OpenDocument="startup_stm32h723xx.s", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/startup_stm32h723xx.s", Line=50
 OpenDocument="shoot.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/shoot/shoot.c", Line=162
-OpenDocument="gimbal.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c", Line=222
+OpenDocument="gimbal.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c", Line=144
 OpenDocument="robot_cmd.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/cmd/robot_cmd.c", Line=119
 OpenDocument="stm32h7xx_hal_fdcan.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_fdcan.c", Line=3351
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=2, w=602, h=89, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=0, w=602, h=175, TabPos=0, TopOfStack=0, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=549, h=321, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=602, h=74, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=693, h=264, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x240043E7
-OpenWindow="Local Data", DockArea=RIGHT, x=0, y=1, w=602, h=89, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Local Data", DockArea=RIGHT, x=0, y=0, w=602, h=175, TabPos=1, TopOfStack=1, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=1, w=549, h=349, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Data Sampling", DockArea=BOTTOM, x=1, y=0, w=734, h=264, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=RIGHT, x=0, y=3, w=602, h=406, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="254;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="467;-6", CodeGraphLegendShown=0, CodeGraphLegendPosition="442;0"
+OpenWindow="Timeline", DockArea=RIGHT, x=0, y=1, w=602, h=478, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="254;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="603;-1", CodeGraphLegendShown=0, CodeGraphLegendPosition="578;0"
 OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=411, h=264, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
-TableHeader="Local Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type";"Scope"], ColWidths=[154;100;100;100;231;100]
 TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[100;100;100;100;100;102]
+TableHeader="Local Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type";"Scope"], ColWidths=[154;100;100;100;231;100]
 TableHeader="Source Files", SortCol="File", SortOrder="DESCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[239;100;100;100;875]
 TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" (vision_gimbal_data).Vision_set_r_pitch"], ColWidths=[100;100;100]
 TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[100;100;100;100;100;100;100;100;100]
@@ -47,3 +50,8 @@ WatchedExpression="gimbal_cmd_send", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="shoot_cmd_send", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="shoot_cmd_recv", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="shoot_l", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="gimbal_imu_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="low_contr", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="referee_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="cmd_vel_usart_instance", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="Gimbal_Base", RefreshRate=5, Window=Watched Data 1

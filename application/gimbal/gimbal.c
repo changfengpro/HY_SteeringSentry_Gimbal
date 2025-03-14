@@ -34,8 +34,10 @@ static float Yaw_single_angle, Yaw_angle_sum;
 
 void GimbalInit()
 {   
-    gimbal_IMU_data = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源
     float gimbal_base_angle_feed_ptr = gimbal_IMU_data->YawTotalAngle;
+
+    gimbal_IMU_data = INS_ptr();
+
     // YAW
     Motor_Init_Config_s yaw_config = {
         .can_init_config = {
@@ -169,6 +171,8 @@ void GimbalInit()
     gimbal_pub = PubRegister("gimbal_feed", sizeof(Gimbal_Upload_Data_s));
     gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
     vision_gimbal_pub = PubRegister("vision_gimbal_data",sizeof(Vision_Gimbal_Data_s));
+
+    gimbal_IMU_data = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源   !!! 不能改初始化顺序 原因：待写
 }
 
 
