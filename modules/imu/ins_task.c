@@ -78,6 +78,11 @@ static void InitQuaternion(float *init_q4)
         init_q4[i + 1] = axis_rot[i] * sinf(angle / 2.0f); // 轴角公式,第三轴为0(没有z轴分量)
 }
 
+attitude_t *INS_ptr(void)
+{
+    return (attitude_t *)&INS.Gyro;
+}
+
 attitude_t *INS_Init(void)
 {
     if (!INS.init)
@@ -101,7 +106,7 @@ attitude_t *INS_Init(void)
     InitQuaternion(init_quaternion);
     IMU_QuaternionEKF_Init(init_quaternion, 10, 0.001, 1000000, 1, 0);
     // imu heat init
-    PID_Init_Config_s config = {.MaxOut = 1,
+    PID_Init_Config_s config = {.MaxOut = 10,
                                 .IntegralLimit = 80,
                                 .DeadBand = 0,
                                 .Kp = 400,

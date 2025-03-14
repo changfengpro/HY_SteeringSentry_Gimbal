@@ -5,22 +5,24 @@
  * @version: 
  * @Date: 2025-02-01 20:34:56
  * @LastEditors:  
- * @LastEditTime: 2025-03-13 07:45:17
+ * @LastEditTime: 2025-03-14 20:48:08
  */
 
 #include "cmd_vel.h"
-
+#include "ins_task.h"
 
 #define START_BYTE 0xAA
 #define END_BYTE 0x55
 #define CMD_VEL_CONTROL_FRAME_SIZE 27u  //导航接的buffer大小
+#define INS_SIZE sizeof(attitude_t)
 
 static Radar_Data radar_ctrl;
 static uint8_t cmd_vel_init_flag;
-static uint8_t low_contr[CMD_VEL_CONTROL_FRAME_SIZE];
+static uint8_t low_contr[CMD_VEL_CONTROL_FRAME_SIZE + INS_SIZE];
 
 static USARTInstance *cmd_vel_usart_instance;   //导航串口实例
 static DaemonInstance *cmd_vel_daemo_instance;  //导航守护进程实例
+static attitude_t *gimbal_imu_data; // 云台数据转发
 
 /**
  * @brief cmd_vel数据包解析
@@ -33,7 +35,7 @@ static void Cmd_vel_Parse(const uint8_t *cmd_vel_buf)
     if(cmd_vel_buf[0] != START_BYTE || cmd_vel_buf[26] != END_BYTE)
     {
         LOGWARNING("[cmd_vel] Packet format error");
-        return;
+        // return;
     }
 
     // 计算校验和（前 25 字节）
@@ -43,8 +45,8 @@ static void Cmd_vel_Parse(const uint8_t *cmd_vel_buf)
         checksum ^= cmd_vel_buf[i];
     }
     
-    if(checksum == cmd_vel_buf[25]) // 校验正确
-    {
+    // if(checksum == cmd_vel_buf[25]) // 校验正确
+    // {
         // 解析数据改为在sentry_chassis项目，gimal只作转发
         // memcpy(&radar_ctrl.linear.x, &cmd_vel_buf[1], sizeof(float));
         // memcpy(&radar_ctrl.linear.y, &cmd_vel_buf[5], sizeof(float));
@@ -53,19 +55,33 @@ static void Cmd_vel_Parse(const uint8_t *cmd_vel_buf)
         // memcpy(&radar_ctrl.angular.y, &cmd_vel_buf[17], sizeof(float));
         // memcpy(&radar_ctrl.angular.z, &cmd_vel_buf[21], sizeof(float));
 
-        memcpy(&low_contr, cmd_vel_buf, 27);
-        HAL_UART_Transmit_DMA(&huart10, low_contr, CMD_VEL_CONTROL_FRAME_SIZE);
+        memcpy(&low_contr[0], cmd_vel_buf, 25);
+        memcpy(&low_contr[25], gimbal_imu_data, sizeof(attitude_t));
+
+        low_contr[0]  = START_BYTE;
+
+        checksum = 0;
+
+        for(int i = 0; i < 65; i++)
+        {
+            checksum ^= low_contr[i];
+        }
+        
+        low_contr[65] = checksum;
+        low_contr[66] = END_BYTE;
+
+        HAL_UART_Transmit_DMA(&huart10, low_contr, sizeof(low_contr));
 
 
         LOGINFO("[cmd_vel] Parsed data: Linear x: %.6f, Linear y: %.6f, Linear z: %.6f, "
                 "Angular x: %.6f, Angular y: %.6f, Angular z: %.6f",
                 radar_ctrl.linear.x, radar_ctrl.linear.y, radar_ctrl.linear.z,
                 radar_ctrl.angular.x, radar_ctrl.angular.y, radar_ctrl.angular.z);
-    }
-    else
-    {
-        LOGWARNING("[cmd_vel] Checksum error");
-    }
+    // }
+    // else
+    // {
+    //     LOGWARNING("[cmd_vel] Checksum error");
+    // }
 }
 
 /**
@@ -87,7 +103,7 @@ static void CmdVelLostCallback()
 {
     memset(&radar_ctrl, 0, sizeof(radar_ctrl)); //清空cmd_vel数据
     USARTServiceInit(cmd_vel_usart_instance);   //尝试重新启动
-
+    Cmd_vel_Parse(cmd_vel_usart_instance->recv_buff);   //进行协议解析
     LOGWARNING("[Cmd_Vel] radar control lost");
     
 }
@@ -98,7 +114,8 @@ static void CmdVelLostCallback()
  * @return 初始化后的雷达数据
  */
 Radar_Data *CmdVelControlInit(UART_HandleTypeDef *cmd_vel_usart_handle)
-{
+{   
+    gimbal_imu_data = INS_ptr();
     USART_Init_Config_s config;
     config.module_callback = CmdVelControlRxCallback;
     config.usart_handle = cmd_vel_usart_handle;
@@ -111,7 +128,7 @@ Radar_Data *CmdVelControlInit(UART_HandleTypeDef *cmd_vel_usart_handle)
         .callback = CmdVelLostCallback,
         .owner_id = NULL,   //只有一个cmd_vel不需要id
     };
-    // cmd_vel_daemo_instance = DaemonRegister(&daemo_conf);
+    cmd_vel_daemo_instance = DaemonRegister(&daemo_conf);
     cmd_vel_init_flag = 1;
 
     return &radar_ctrl;

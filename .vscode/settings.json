@@ -28,6 +28,7 @@
         "message_center.h": "c",
         "remote_control.h": "c",
         "robot_def.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "ins_task.h": "c"
     }
 }

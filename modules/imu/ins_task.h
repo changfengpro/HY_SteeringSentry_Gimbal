@@ -79,6 +79,12 @@ typedef struct
 } IMU_Param_t;
 
 /**
+ * @brief 传递INS地址 
+ * @return
+ */
+attitude_t *INS_ptr(void);
+
+/**
  * @brief 初始化惯导解算系统
  *
  */
