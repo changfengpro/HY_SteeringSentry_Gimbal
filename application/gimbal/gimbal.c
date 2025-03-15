@@ -115,7 +115,7 @@ void GimbalInit()
     };  
 
     Motor_Init_Config_s DMmotor_Motor_Config = {
-    .controller_setting_init_config.angle_feedback_source = OTHER_FEED,
+    .controller_setting_init_config.angle_feedback_source = MOTOR_FEED,
     .controller_setting_init_config.close_loop_type = ANGLE_LOOP,
     .controller_setting_init_config.feedback_reverse_flag = FEEDBACK_DIRECTION_NORMAL,
     .controller_setting_init_config.feedforward_flag = SPEED_FEEDFORWARD,

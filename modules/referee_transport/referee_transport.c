@@ -5,7 +5,7 @@
  * @version: 
  * @Date: 2025-03-13 06:34:23
  * @LastEditors:  
- * @LastEditTime: 2025-03-13 14:54:28
+ * @LastEditTime: 2025-03-16 01:12:31
  */
 #include "referee_transport.h"
 
@@ -15,12 +15,11 @@
 
 static referee_info_t referee_data;
 static uint8_t referee_init_flag;
-
+static uint8_t game_state;
 
 static USARTInstance *referee_data_usart_instance;  // 裁判系统数据转发串口实例
 static DaemonInstance *referee_data_daemo_instance; // 裁判系统数据转发进程守护实例
 
-float watch_size;
 
 /**
  * @brief 裁判系统数据转发解析函数
@@ -55,6 +54,8 @@ static void RefereeDataRxCallback()
 {
     DaemonReload(referee_data_daemo_instance);   //先喂狗
     RefereeDataParse(referee_data_usart_instance->recv_buff);
+    game_state = referee_data.GameState.game_progress;
+    HAL_UART_Transmit_DMA(&huart7, game_state, sizeof(game_state));
 }
 
 /**
@@ -66,7 +67,7 @@ static void RefereeDataLostCallback()
     memset(&referee_data, 0, sizeof(referee_data)); //清空cmd_vel数据
     USARTServiceInit(referee_data_usart_instance);   //尝试重新启动
 
-    LOGWARNING("[Cmd_Vel] radar control lost");
+    LOGWARNING("[referee] referee data lost");
 }
 
 /**
