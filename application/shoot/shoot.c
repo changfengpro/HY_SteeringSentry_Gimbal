@@ -15,13 +15,13 @@
 extern Shoot_Ctrl_Cmd_s shoot_cmd_send;      // 传递给发射的控制信息
 static ShootInstance shoot_l, shoot_r; // 左右发射机构实例
 static Publisher_t *shoot_pub;
-static Subscriber_t *vision_recv_data_sub;
+static Subscriber_t *vision_recv_r_data_sub;
 static Shoot_Ctrl_Cmd_s shoot_cmd_recv; // 来自cmd的发射控制信息
 static Subscriber_t *shoot_sub;
 static Shoot_Upload_Data_s shoot_feedback_data; // 来自cmd的发射控制信息
 static Subscriber_t *vision_gimbal_sub;
 static Vision_Gimbal_Data_s vision_gimbal_data_recv;
-static Vision_Recv_s vision_recv_data_2_shoot;
+static Vision_Recv_s vision_recv_data_2_shoot_r;
 static float output[2]; //存储拨弹电机的输出值
 static int count[2] = {0, 0};       //用于堵转计数
 static int enter_count[2]; //用于进入计数
@@ -65,11 +65,11 @@ void ShootInit()
         },
         .motor_type = M3508};
     friction_Ll_config.can_init_config.tx_id = 3,
-    friction_Ll_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_REVERSE;
+    friction_Ll_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
     shoot_l.friction_l = DJIMotorInit(&friction_Ll_config);
 
     friction_Ll_config.can_init_config.tx_id = 4; // 右摩擦轮,改txid和方向就行
-    friction_Ll_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
+    friction_Ll_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_REVERSE;
     // friction_Ll_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_REVERSE;
     shoot_l.friction_r = DJIMotorInit(&friction_Ll_config);
 
@@ -103,14 +103,14 @@ void ShootInit()
 
             .outer_loop_type = SPEED_LOOP,
             .close_loop_type = SPEED_LOOP | CURRENT_LOOP,
-            .motor_reverse_flag = MOTOR_DIRECTION_NORMAL,
+            .motor_reverse_flag = MOTOR_DIRECTION_REVERSE,
         },
         .motor_type = M3508};
     friction_Rl_config.can_init_config.tx_id = 3,
     shoot_r.friction_l = DJIMotorInit(&friction_Rl_config);
 
     friction_Rl_config.can_init_config.tx_id = 4; // 右摩擦轮,改txid和方向就行
-    friction_Rl_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_REVERSE;
+    friction_Rl_config.controller_setting_init_config.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
     shoot_r.friction_r = DJIMotorInit(&friction_Rl_config);
 
 
@@ -168,7 +168,7 @@ void ShootInit()
     shoot_pub = PubRegister("shoot_feed", sizeof(Shoot_Upload_Data_s));
     shoot_sub = SubRegister("shoot_cmd", sizeof(Shoot_Ctrl_Cmd_s));
     vision_gimbal_sub = SubRegister("vision_gimbal_data", sizeof(Vision_Gimbal_Data_s));
-    vision_recv_data_sub = SubRegister("vision_recv_data", sizeof(Vision_Recv_s));
+    vision_recv_r_data_sub = SubRegister("vision_recv_data", sizeof(Vision_Recv_s));
 }
 
 /* 机器人发射机构控制核心任务 */
@@ -177,7 +177,7 @@ void ShootTask()
     // 从cmd获取控制数据
     SubGetMessage(shoot_sub, &shoot_cmd_recv);
     SubGetMessage(vision_gimbal_sub, &vision_gimbal_data_recv);
-    SubGetMessage(vision_recv_data_sub, &vision_recv_data_2_shoot);
+    SubGetMessage(vision_recv_r_data_sub, &vision_recv_data_2_shoot_r);
 
     if(vision_gimbal_data_recv.vision_statue == GIMBAL_VISION)
     {
@@ -185,7 +185,7 @@ void ShootTask()
         shoot_cmd_recv.friction_mode = FRICTION_ON;
         // if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 1.0 && vision_recv_data_2_shoot.target_state == TRACKING 
         //  && (vision_gimbal_data_recv.Vision_set_r_pitch - vision_gimbal_data_recv.pitch_r_motor_angle) < 0.8)
-        if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 0.8 && vision_recv_data_2_shoot.target_state == TRACKING )
+        if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 0.8 && vision_recv_data_2_shoot_r.target_state == TRACKING )
         {
             shoot_cmd_recv.load_mode = LOAD_BURSTFIRE;
         } 

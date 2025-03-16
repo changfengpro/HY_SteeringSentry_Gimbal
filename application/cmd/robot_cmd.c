@@ -37,12 +37,12 @@ static Chassis_Upload_Data_s chassis_fetch_data; // 从底盘应用接收的反�
 static RC_ctrl_t *rc_data;              // 遥控器数据,初始化时返回
 static referee_info_t *referee_recv_data; // 裁判系统数据
 static Radar_Data *radar_data;          //导航数据，初始化时返回
-static Vision_Recv_s *vision_recv_data; // 视觉接收数据指针,初始化时返回
-static Vision_Send_s vision_send_data;  // 视觉发送数据
+static Vision_Recv_s *vision_recv_data_r; // 视觉接收数据指针,初始化时返回
+static Vision_Send_s vision_send_data_r;  // 视觉发送数据
 
 static Publisher_t *gimbal_cmd_pub;            // 云台控制消息发布者
 static Subscriber_t *gimbal_feed_sub;          // 云台反馈信息订阅者
-static Publisher_t *vision_recv_data_pub;
+static Publisher_t *vision_recv_l_data_pub, *vision_recv_r_data_pub;
 
 static Gimbal_Ctrl_Cmd_s gimbal_cmd_send;      // 传递给云台的控制信息
 static Gimbal_Upload_Data_s gimbal_fetch_data; // 从云台获取的反馈信息
@@ -59,7 +59,7 @@ BMI088_Data_t bmi088_data;
 void RobotCMDInit()
 {
     rc_data = RemoteControlInit(&huart5);   // 修改为对应串口,注意如果是自研板dbus协议串口需选用添加了反相器的那个
-    vision_recv_data = VisionInit(&huart1); // 视觉通信串口
+    vision_recv_data_r = VisionInit(&huart1); // 视觉通信串口
     radar_data = CmdVelControlInit(&huart7); // 导航控制
     referee_recv_data = RefereeDataTransportInit(&huart10);
     // radar_data = CmdVelControlInit(&huart1);
@@ -68,7 +68,8 @@ void RobotCMDInit()
     gimbal_feed_sub = SubRegister("gimbal_feed", sizeof(Gimbal_Upload_Data_s));
     shoot_cmd_pub = PubRegister("shoot_cmd", sizeof(Shoot_Ctrl_Cmd_s));
     shoot_feed_sub = SubRegister("shoot_feed", sizeof(Shoot_Upload_Data_s));
-    vision_recv_data_pub = PubRegister("vision_recv_data", sizeof(Vision_Recv_s));
+    vision_recv_l_data_pub = PubRegister("vision_recv_l_data_", sizeof(Vision_Recv_s));
+    vision_recv_r_data_pub = PubRegister("vision_recv_r_data_", sizeof(Vision_Recv_s));
 
 #ifdef ONE_BOARD // 双板兼容
     chassis_cmd_pub = PubRegister("chassis_cmd", sizeof(Chassis_Ctrl_Cmd_s));
@@ -144,7 +145,7 @@ static void RemoteControlSet()
         // ...
     }
     // 左侧开关状态为[下],或视觉未识别到目标,纯遥控器拨杆控制
-    if (switch_is_down(rc_data[TEMP].rc.switch_left) || vision_recv_data->target_state == NO_TARGET)
+    if (switch_is_down(rc_data[TEMP].rc.switch_left) || vision_recv_data_r->target_state == NO_TARGET)
     { // 按照摇杆的输出大小进行角度增量,增益系数需调整
         
         gimbal_cmd_send.yaw += 0.002f * (float)rc_data[TEMP].rc.rocker_l_;
@@ -184,10 +185,10 @@ static void RemoteControlSet()
 static void VisionRadaControlSet()
 {
     gimbal_cmd_send.gimbal_mode = GIMBAL_VISION;    //云台自瞄模式
-    gimbal_cmd_send.yaw = vision_recv_data->yaw;
-    gimbal_cmd_send.pitch = vision_recv_data->pitch;
-    if(vision_recv_data->fire_mode == NO_FIRE)  shoot_cmd_send.friction_mode = FRICTION_OFF;
-    if(vision_recv_data->fire_mode == AUTO_FIRE) shoot_cmd_send.friction_mode = FRICTION_ON;
+    gimbal_cmd_send.yaw = vision_recv_data_r->yaw;
+    gimbal_cmd_send.pitch = vision_recv_data_r->pitch;
+    if(vision_recv_data_r->fire_mode == NO_FIRE)  shoot_cmd_send.friction_mode = FRICTION_OFF;
+    if(vision_recv_data_r->fire_mode == AUTO_FIRE) shoot_cmd_send.friction_mode = FRICTION_ON;
     shoot_cmd_send.shoot_rate = 10;
     
 }
@@ -330,6 +331,8 @@ void RobotCMDTask()
     else if (switch_is_mid(rc_data[TEMP].rc.switch_left)) // 控器左侧开关状态为[中],视觉导航模式
         VisionRadaControlSet();
 
+    VisionRadaControlSet();
+
     EmergencyHandler(); // 处理模块离线和遥控器急停等紧急情况
 
     // 设置视觉发送数据,还需增加加速度和角速度数据
@@ -345,5 +348,5 @@ void RobotCMDTask()
 #endif // GIMBAL_BOARD
     PubPushMessage(shoot_cmd_pub, (void *)&shoot_cmd_send);
     PubPushMessage(gimbal_cmd_pub, (void *)&gimbal_cmd_send);
-    PubPushMessage(vision_recv_data_pub, (void *)vision_recv_data);
+    PubPushMessage(vision_recv_r_data_pub, (void *)vision_recv_data_r);
 }

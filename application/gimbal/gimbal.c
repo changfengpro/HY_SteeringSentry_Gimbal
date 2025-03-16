@@ -8,10 +8,10 @@
 #include "bmi088.h"
 
 
-#define YAW_L_INIT_ANGLE 81.0f // 云台初始角度
-#define PITCH_L_INIT_ANGLE 98.0f // 云台初始俯仰角度   -117.0f
-#define YAW_R_INIT_ANGLE -90.0f // 云台初始角度
-#define PITCH_R_INIT_ANGLE -120.5f // 云台初始俯仰角度   -118.0f
+#define YAW_L_INIT_ANGLE 58.0f // 云台初始角度
+#define PITCH_L_INIT_ANGLE 130.0f // 云台初始俯仰角度   -117.0f
+#define YAW_R_INIT_ANGLE 88.0f // 云台初始角度
+#define PITCH_R_INIT_ANGLE 155.0f // 云台初始俯仰角度   -118.0f
 #define PITCH_R_MIN 28 // 右云台经IMU测出下限时的pitch角度 25.3
 #define PITCH_L_MIN 28
 #define YAW_COEFF_REMOTE 0.036363636f //云台遥控系数
@@ -49,7 +49,7 @@ void GimbalInit()
                 .Kp = 52, // Me:30
                 .Ki = 30,
                 .Kd = 0,
-                .DeadBand = 0.1,
+                .DeadBand = 0,
                 .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement | PID_OutputFilter,
                 .IntegralLimit = 100,
                 .Output_LPF_RC=0.00005,
@@ -321,11 +321,11 @@ void GimbalTask()
         DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, MOTOR_FEED);
 
-        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_yaw, 22, 130);
-        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_pitch, 58, 90);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_yaw, 58, 270);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_pitch, 130, 165);
 
-        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, -180, 0);
-        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_pitch, -180, -125);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, 87, 287);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_pitch, 120, 155);
 
         DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw);
         DJIMotorSetRef(pitch_r_motor, vision_gimbal_data.Vision_set_r_pitch);
