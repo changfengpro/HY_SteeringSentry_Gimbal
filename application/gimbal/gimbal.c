@@ -4,6 +4,8 @@
 #include "dmmotor.h"
 #include "ins_task.h"
 #include "message_center.h"
+#include "master_process.h"
+#include "master_process_l.h"
 #include "general_def.h"
 #include "bmi088.h"
 #include "bsp_dwt.h"
@@ -355,6 +357,7 @@ void GimbalTask()
     ScanTargetL();
     ScanTargetR();
 
+    VisionSetAltitude_L(vision_gimbal_data.Vision_l_yaw * DEGREE_2_RAD, vision_gimbal_data.Vision_l_pitch * DEGREE_2_RAD, 0);
     VisionSetAltitude(vision_gimbal_data.Vision_r_yaw * DEGREE_2_RAD, vision_gimbal_data.Vision_r_pitch * DEGREE_2_RAD, 0);
     // @todo:现在已不再需要电机反馈,实际上可以始终使用IMU的姿态数据来作为云台的反馈,yaw电机的offset只是用来跟随底盘
     // 根据控制模式进行电机反馈切换和过渡,视觉模式在robot_cmd模块就已经设置好,gimbal只看yaw_ref和pitch_ref

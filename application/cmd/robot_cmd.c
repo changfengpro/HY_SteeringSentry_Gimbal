@@ -5,6 +5,7 @@
 #include "remote_control.h"
 #include "ins_task.h"
 #include "master_process.h"
+#include "master_process.h"
 #include "message_center.h"
 #include "general_def.h"
 #include "dji_motor.h"
@@ -59,7 +60,7 @@ BMI088_Data_t bmi088_data;
 void RobotCMDInit()
 {
     rc_data = RemoteControlInit(&huart5);   // 修改为对应串口,注意如果是自研板dbus协议串口需选用添加了反相器的那个
-    vision_recv_data_l = VisionInit(&huart8);
+    vision_recv_data_l = VisionInit(&huart8); // 视觉通信串口
     vision_recv_data_r = VisionInit(&huart9); // 视觉通信串口
     radar_data = CmdVelControlInit(&huart7); // 导航控制
     referee_recv_data = RefereeDataTransportInit(&huart10);

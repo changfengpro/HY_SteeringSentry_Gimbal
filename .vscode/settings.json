@@ -29,6 +29,9 @@
         "remote_control.h": "c",
         "robot_def.h": "c",
         "stdint.h": "c",
-        "ins_task.h": "c"
+        "ins_task.h": "c",
+        "rv2_protocal.h": "c",
+        "dji_motor.h": "c",
+        "seasky_protocol.h": "c"
     }
 }

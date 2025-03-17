@@ -81,6 +81,9 @@ modules/master_machine/master_process.c \
 modules/master_machine/seasky_protocol.c \
 modules/master_machine/rv2_protocal.c \
 modules/master_machine/rv2_trajectory.c \
+modules/master_machine_left/master_process_l.c \
+modules/master_machine_left/rv2_protocal_l.c \
+modules/master_machine_left/rv2_trajectory_l.c \
 modules/motor/DJImotor/dji_motor.c \
 modules/motor/HTmotor/HT04.c \
 modules/motor/LKmotor/LK9025.c \
@@ -243,6 +246,7 @@ C_INCLUDES =  \
 -Imodules/BMI088 \
 -Imodules/imu \
 -Imodules/master_machine \
+-Imodules/master_machine_left \
 -Imodules/motor/DJImotor \
 -Imodules/motor/LKmotor \
 -Imodules/motor/HTmotor \
@@ -335,7 +339,7 @@ $(BUILD_DIR):
 # clean up
 #######################################
 clean:
-	rd $(BUILD_DIR) /s/q
+	rm -rf $(BUILD_DIR)
   
 #######################################
 # dependencies
