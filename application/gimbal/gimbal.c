@@ -260,7 +260,11 @@ static void ScanTargetL()
     time = DWT_GetTimeline_ms();
     time_T = DWT_GetTimeline_s();
     sint = arm_sin_f32(time_T);
-    if(vision_recv_data_l.target_state == NO_TARGET)
+
+    if(time_T < 6)
+        vision_gimbal_data.Vision_set_l_yaw = (YAW_L_LIMIT_MIN + YAW_L_LIMIT_MAX) / 2;
+
+    if(vision_recv_data_l.target_state == NO_TARGET && (time_T > 6));
     {
         diff_time += time - last_time;
         if(diff_time > 500)
@@ -293,11 +297,15 @@ static void ScanTargetR()
     time_T = DWT_GetTimeline_s();
     sint = arm_sin_f32(time_T);
     
-    if(vision_recv_data_r.target_state == NO_TARGET)
+    if(time_T < 6)
+        vision_gimbal_data.Vision_set_r_yaw = (YAW_R_LIMIT_MIN + YAW_R_LIMIT_MAX) / 2;
+
+
+    if(vision_recv_data_r.target_state == NO_TARGET && (time_T > 6))
     {
         diff_time += time - last_time;
         if(diff_time > 500)
-        {
+        {   
             vision_gimbal_data.Vision_set_r_yaw = ((YAW_R_LIMIT_MIN + YAW_R_LIMIT_MAX) / 2) + (((YAW_R_LIMIT_MAX - YAW_R_LIMIT_MIN) / 2) * arm_sin_f32(time_T));
             vision_gimbal_data.Vision_set_r_pitch = ((PITCH_R_LIMIT_MIN + PITCH_R_LIMIT_MAX) / 2) + (((PITCH_R_LIMIT_MIN - PITCH_R_LIMIT_MAX) / 2) * arm_sin_f32(time_T * 5));
         }

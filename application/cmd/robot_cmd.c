@@ -37,7 +37,7 @@ static Chassis_Upload_Data_s chassis_fetch_data; // 从底盘应用接收的反�
 static RC_ctrl_t *rc_data;              // 遥控器数据,初始化时返回
 static referee_info_t *referee_recv_data; // 裁判系统数据
 static Radar_Data *radar_data;          //导航数据，初始化时返回
-static Vision_Recv_s *vision_recv_data_r; // 视觉接收数据指针,初始化时返回
+static Vision_Recv_s *vision_recv_data_l, *vision_recv_data_r; // 视觉接收数据指针,初始化时返回
 static Vision_Send_s vision_send_data_r;  // 视觉发送数据
 
 static Publisher_t *gimbal_cmd_pub;            // 云台控制消息发布者
@@ -59,7 +59,8 @@ BMI088_Data_t bmi088_data;
 void RobotCMDInit()
 {
     rc_data = RemoteControlInit(&huart5);   // 修改为对应串口,注意如果是自研板dbus协议串口需选用添加了反相器的那个
-    vision_recv_data_r = VisionInit(&huart1); // 视觉通信串口
+    vision_recv_data_l = VisionInit(&huart8);
+    vision_recv_data_r = VisionInit(&huart9); // 视觉通信串口
     radar_data = CmdVelControlInit(&huart7); // 导航控制
     referee_recv_data = RefereeDataTransportInit(&huart10);
     // radar_data = CmdVelControlInit(&huart1);
