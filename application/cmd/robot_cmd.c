@@ -68,8 +68,8 @@ void RobotCMDInit()
     gimbal_feed_sub = SubRegister("gimbal_feed", sizeof(Gimbal_Upload_Data_s));
     shoot_cmd_pub = PubRegister("shoot_cmd", sizeof(Shoot_Ctrl_Cmd_s));
     shoot_feed_sub = SubRegister("shoot_feed", sizeof(Shoot_Upload_Data_s));
-    vision_recv_l_data_pub = PubRegister("vision_recv_l_data_", sizeof(Vision_Recv_s));
-    vision_recv_r_data_pub = PubRegister("vision_recv_r_data_", sizeof(Vision_Recv_s));
+    vision_recv_l_data_pub = PubRegister("vision_recv_l_data", sizeof(Vision_Recv_s));
+    vision_recv_r_data_pub = PubRegister("vision_recv_r_data", sizeof(Vision_Recv_s));
 
 #ifdef ONE_BOARD // 双板兼容
     chassis_cmd_pub = PubRegister("chassis_cmd", sizeof(Chassis_Ctrl_Cmd_s));

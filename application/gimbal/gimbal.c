@@ -6,14 +6,27 @@
 #include "message_center.h"
 #include "general_def.h"
 #include "bmi088.h"
+#include "bsp_dwt.h"
 
 
 #define YAW_L_INIT_ANGLE 58.0f // 云台初始角度
 #define PITCH_L_INIT_ANGLE 130.0f // 云台初始俯仰角度   -117.0f
-#define YAW_R_INIT_ANGLE 88.0f // 云台初始角度
-#define PITCH_R_INIT_ANGLE 155.0f // 云台初始俯仰角度   -118.0f
+#define YAW_R_INIT_ANGLE-270.0f // 云台初始角度
+#define PITCH_R_INIT_ANGLE 160.0f // 云台初始俯仰角度   -118.0f
 #define PITCH_R_MIN 28 // 右云台经IMU测出下限时的pitch角度 25.3
 #define PITCH_L_MIN 28
+
+// 电机软件限位
+#define YAW_L_LIMIT_MIN 65
+#define YAW_L_LIMIT_MAX 270
+#define PITCH_L_LIMIT_MIN 122
+#define PITCH_L_LIMIT_MAX 165
+
+#define YAW_R_LIMIT_MIN -210
+#define YAW_R_LIMIT_MAX -10
+#define PITCH_R_LIMIT_MIN 130
+#define PITCH_R_LIMIT_MAX 160
+
 #define YAW_COEFF_REMOTE 0.036363636f //云台遥控系数
 #define PITCH_COEFF_REMOTE 0.134848485f //云台俯仰遥控系数
 #define YAW_VISION_OFFSET 12
@@ -25,9 +38,11 @@ static DMMotorInstance  *Gimbal_Base;
 static Publisher_t *gimbal_pub;                   // 云台应用消息发布者(云台反馈给cmd)
 static Subscriber_t *gimbal_sub;                  // cmd控制消息订阅者
 static Publisher_t *vision_gimbal_pub; //云台视觉信息
+static Subscriber_t *vision_recv_data_sub_l, *vision_recv_data_sub_r;
 static Gimbal_Upload_Data_s gimbal_feedback_data; // 回传给cmd的云台状态信息
 static Gimbal_Ctrl_Cmd_s gimbal_cmd_recv;         // 来自cmd的控制信息
 static Vision_Gimbal_Data_s vision_gimbal_data; // 自瞄时云台数据(为方便计算，定义了相对角度)
+static Vision_Recv_s vision_recv_data_l, vision_recv_data_r;
 static float Yaw_single_angle, Yaw_angle_sum;
 // static BMI088Instance *bmi088; // 云台IMU
 
@@ -171,6 +186,8 @@ void GimbalInit()
     gimbal_pub = PubRegister("gimbal_feed", sizeof(Gimbal_Upload_Data_s));
     gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
     vision_gimbal_pub = PubRegister("vision_gimbal_data",sizeof(Vision_Gimbal_Data_s));
+    vision_recv_data_sub_l = SubRegister("vision_recv_l_data", sizeof(Vision_Recv_s));
+    vision_recv_data_sub_r = SubRegister("vision_recv_r_data", sizeof(Vision_Recv_s));
 
     gimbal_IMU_data = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源   !!! 不能改初始化顺序 原因：待写
 }
@@ -232,6 +249,68 @@ static void VisionAngleCalc()
 
 static float temp_statue;
 
+/**
+ * @brief 左头未识别到时扫描
+ * @return 
+ */
+static void ScanTargetL()
+{
+    static float time, last_time, diff_time, time_T, sint, cnt;
+
+    time = DWT_GetTimeline_ms();
+    time_T = DWT_GetTimeline_s();
+    sint = arm_sin_f32(time_T);
+    if(vision_recv_data_l.target_state == NO_TARGET)
+    {
+        diff_time += time - last_time;
+        if(diff_time > 500)
+        {   
+
+            vision_gimbal_data.Vision_set_l_yaw = ((YAW_L_LIMIT_MIN + YAW_L_LIMIT_MAX) / 2) + (((YAW_L_LIMIT_MAX - YAW_L_LIMIT_MIN) / 2) * arm_sin_f32(time_T));
+            vision_gimbal_data.Vision_set_l_pitch = ((PITCH_L_LIMIT_MIN + PITCH_L_LIMIT_MAX) / 2) + (((PITCH_L_LIMIT_MAX - PITCH_L_LIMIT_MIN) / 2) * arm_sin_f32(time_T * 5));
+            
+        }
+
+    }
+
+    if(vision_recv_data_l.target_state == TRACKING)
+    {
+        diff_time = 0;
+    }
+
+    last_time = time;
+}
+
+/**
+ * @brief 右头未识别到时扫描
+ * @return 
+ */
+static void ScanTargetR()
+{
+    static float time, last_time, diff_time, time_T, sint, cnt;
+
+    time = DWT_GetTimeline_ms();
+    time_T = DWT_GetTimeline_s();
+    sint = arm_sin_f32(time_T);
+    
+    if(vision_recv_data_r.target_state == NO_TARGET)
+    {
+        diff_time += time - last_time;
+        if(diff_time > 500)
+        {
+            vision_gimbal_data.Vision_set_r_yaw = ((YAW_R_LIMIT_MIN + YAW_R_LIMIT_MAX) / 2) + (((YAW_R_LIMIT_MAX - YAW_R_LIMIT_MIN) / 2) * arm_sin_f32(time_T));
+            vision_gimbal_data.Vision_set_r_pitch = ((PITCH_R_LIMIT_MIN + PITCH_R_LIMIT_MAX) / 2) + (((PITCH_R_LIMIT_MIN - PITCH_R_LIMIT_MAX) / 2) * arm_sin_f32(time_T * 5));
+        }
+    }
+
+    if(vision_recv_data_r.target_state == TRACKING)
+    {
+        diff_time = 0;
+    }
+
+    last_time = time;
+}
+
 /* 机器人云台控制核心任务,后续考虑只保留IMU控制,不再需要电机的反馈 */
 void GimbalTask()
 {   
@@ -239,6 +318,8 @@ void GimbalTask()
     // 获取云台控制数据
     // 后续增加未收到数据的处理
     SubGetMessage(gimbal_sub, &gimbal_cmd_recv);
+    SubGetMessage(vision_recv_data_sub_l, &vision_recv_data_l);
+    SubGetMessage(vision_recv_data_sub_r, &vision_recv_data_r);
     // YawAngleCalculate();
     temp_statue = gimbal_cmd_recv.gimbal_mode;
     if(gimbal_cmd_recv.gimbal_mode == GIMBAL_VISION)
@@ -262,6 +343,10 @@ void GimbalTask()
 
 
     VisionAngleCalc();
+
+    ScanTargetL();
+    ScanTargetR();
+
     VisionSetAltitude(vision_gimbal_data.Vision_r_yaw * DEGREE_2_RAD, vision_gimbal_data.Vision_r_pitch * DEGREE_2_RAD, 0);
     // @todo:现在已不再需要电机反馈,实际上可以始终使用IMU的姿态数据来作为云台的反馈,yaw电机的offset只是用来跟随底盘
     // 根据控制模式进行电机反馈切换和过渡,视觉模式在robot_cmd模块就已经设置好,gimbal只看yaw_ref和pitch_ref
@@ -321,11 +406,11 @@ void GimbalTask()
         DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, MOTOR_FEED);
 
-        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_yaw, 58, 270);
-        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_pitch, 130, 165);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_yaw, YAW_L_LIMIT_MIN, YAW_L_LIMIT_MAX);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_l_pitch, PITCH_L_LIMIT_MIN, PITCH_L_LIMIT_MAX);
 
-        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, 87, 287);
-        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_pitch, 120, 155);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_yaw, YAW_R_LIMIT_MIN, YAW_R_LIMIT_MAX);
+        LIMIT_MIN_MAX(vision_gimbal_data.Vision_set_r_pitch, PITCH_R_LIMIT_MIN, PITCH_R_LIMIT_MAX);
 
         DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw);
         DJIMotorSetRef(pitch_r_motor, vision_gimbal_data.Vision_set_r_pitch);
