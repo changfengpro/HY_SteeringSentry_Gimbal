@@ -181,15 +181,15 @@ void GimbalInit()
     pitch_config.can_init_config.can_handle = &hcan2;
     pitch_r_motor = DJIMotorInit(&pitch_config);
 
-    Gimbal_Base = DMMotorInit(&DMmotor_Motor_Config);
-
     gimbal_pub = PubRegister("gimbal_feed", sizeof(Gimbal_Upload_Data_s));
     gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
     vision_gimbal_pub = PubRegister("vision_gimbal_data",sizeof(Vision_Gimbal_Data_s));
     vision_recv_data_sub_l = SubRegister("vision_recv_l_data", sizeof(Vision_Recv_s));
     vision_recv_data_sub_r = SubRegister("vision_recv_r_data", sizeof(Vision_Recv_s));
 
-    gimbal_IMU_data = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源   !!! 不能改初始化顺序 原因：待写
+    gimbal_IMU_data = INS_Init(); 
+
+    Gimbal_Base = DMMotorInit(&DMmotor_Motor_Config);
 }
 
 
