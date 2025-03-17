@@ -10,7 +10,10 @@
                 "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
                 "${workspaceFolder}/modules/referee_transport",
                 "${workspaceFolder}/modules/imu",
-                "${workspaceFolder}/modules/master_machine _left"
+                "${workspaceFolder}/modules/master_machine _left",
+                "${workspaceFolder}/modules/master_machine_left",
+                "${workspaceFolder}/modules/referee",
+                "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

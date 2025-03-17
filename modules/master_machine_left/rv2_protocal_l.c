@@ -5,7 +5,7 @@
  * @version: 
  * @Date: 2025-02-14 13:28:09
  * @LastEditors:  
- * @LastEditTime: 2025-03-17 22:33:06
+ * @LastEditTime: 2025-03-18 00:10:59
  */
 //
 // Created by 26090 on 25-1-13.
@@ -39,7 +39,7 @@ void build_rv2_send_l_data(Vision_Send_s *send,uint8_t *tx_buf,uint16_t *tx_buf_
     rv2_send_l_data.pitch=send->pitch;
     rv2_send_l_data.yaw=send->yaw;
     //对局信息部分
-    rv2_send_l_data.detect_color=send->enemy_color==COLOR_RED ? 1 : 0;          //自身颜色0为红，1为蓝
+    rv2_send_l_data.detect_color=send->enemy_color;
 
     // rv2_send_l_data.reset_tracker=0;
 

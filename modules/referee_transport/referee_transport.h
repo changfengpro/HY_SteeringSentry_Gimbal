@@ -19,5 +19,6 @@
 
 uint8_t RefereeIsOnline();
 referee_info_t *RefereeDataTransportInit(UART_HandleTypeDef *referee_data_usart_handle);
+referee_info_t *referee_ptr();
 
 #endif

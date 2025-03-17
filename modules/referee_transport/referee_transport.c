@@ -5,7 +5,7 @@
  * @version: 
  * @Date: 2025-03-13 06:34:23
  * @LastEditors:  
- * @LastEditTime: 2025-03-16 17:17:08
+ * @LastEditTime: 2025-03-17 23:52:43
  */
 #include "referee_transport.h"
 
@@ -108,6 +108,11 @@ uint8_t RefereeIsOnline()
     if(referee_init_flag == 1)
         return DaemonIsOnline(referee_data_daemo_instance);
     return 0;
+}
+
+referee_info_t *referee_ptr()
+{
+    return &referee_data;
 }
 
 

@@ -11,9 +11,9 @@
 #include "bsp_dwt.h"
 
 
-#define YAW_L_INIT_ANGLE 58.0f // 云台初始角度
+#define YAW_L_INIT_ANGLE 90.0f // 云台初始角度
 #define PITCH_L_INIT_ANGLE 130.0f // 云台初始俯仰角度   -117.0f
-#define YAW_R_INIT_ANGLE-270.0f // 云台初始角度
+#define YAW_R_INIT_ANGLE -30.0f // 云台初始角度
 #define PITCH_R_INIT_ANGLE 160.0f // 云台初始俯仰角度   -118.0f
 #define PITCH_R_MIN 28 // 右云台经IMU测出下限时的pitch角度 25.3
 #define PITCH_L_MIN 28
@@ -358,7 +358,7 @@ void GimbalTask()
     ScanTargetR();
 
     VisionSetAltitude_L(vision_gimbal_data.Vision_l_yaw * DEGREE_2_RAD, vision_gimbal_data.Vision_l_pitch * DEGREE_2_RAD, 0);
-    VisionSetAltitude(vision_gimbal_data.Vision_r_yaw * DEGREE_2_RAD, vision_gimbal_data.Vision_r_pitch * DEGREE_2_RAD, 0);
+    VisionSetAltitude(vision_gimbal_data.Vision_r_yaw * DEGREE_2_RAD, -(vision_gimbal_data.Vision_r_pitch) * DEGREE_2_RAD, 0);
     // @todo:现在已不再需要电机反馈,实际上可以始终使用IMU的姿态数据来作为云台的反馈,yaw电机的offset只是用来跟随底盘
     // 根据控制模式进行电机反馈切换和过渡,视觉模式在robot_cmd模块就已经设置好,gimbal只看yaw_ref和pitch_ref
     switch (gimbal_cmd_recv.gimbal_mode)

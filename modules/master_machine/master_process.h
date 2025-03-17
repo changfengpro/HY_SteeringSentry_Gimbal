@@ -54,9 +54,8 @@ typedef struct
 
 typedef enum
 {
-	COLOR_NONE = 0,
+	COLOR_RED = 0,
 	COLOR_BLUE = 1,
-	COLOR_RED = 2,
 } Enemy_Color_e;
 
 typedef enum

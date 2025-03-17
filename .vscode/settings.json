@@ -32,6 +32,10 @@
         "ins_task.h": "c",
         "rv2_protocal.h": "c",
         "dji_motor.h": "c",
-        "seasky_protocol.h": "c"
+        "seasky_protocol.h": "c",
+        "master_process_l.h": "c",
+        "daemon.h": "c",
+        "referee_transport.h": "c",
+        "general_def.h": "c"
     }
 }

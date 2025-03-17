@@ -16,10 +16,13 @@
 #include "robot_def.h"
 #include "general_def.h"
 #include "bsp_dwt.h"
+#include "referee_transport.h"
+#include "rm_referee.h"
 
 static Vision_Recv_s recv_data_l;
 static Vision_Send_s send_data_l;
 static DaemonInstance *vision_l_daemon_instance;
+static referee_info_t *referee_data;
 
 static rv2_recv_protocol_s *rv2_recv_l;
 static trajectory_target_s *trajectory_l;
@@ -93,7 +96,7 @@ Vision_Recv_s *VisionLeftInit(UART_HandleTypeDef *_handle)
     conf.recv_buff_size = VISION_RECV_SIZE;
     conf.usart_handle = _handle;
     vision_l_usart_instance = USARTRegister(&conf);
-
+    referee_data = referee_ptr();
     // 为master process注册daemon,用于判断视觉通信是否离线
     Daemon_Init_Config_s daemon_conf = {
         .callback = VisionLOfflineCallback, // 离线时调用的回调函数,会重启串口接收
@@ -125,8 +128,10 @@ void VisionSend_L()
 
     VisionSetAimXYZ_L(trajectory_l->aim_x,trajectory_l->aim_y,trajectory_l->aim_z);
 
-    
-    send_data_l.enemy_color=color_1;
+    if(referee_data->referee_id.Robot_Color == 0)
+        send_data_l.enemy_color= 1;
+    if(referee_data->referee_id.Robot_Color == 1)
+        send_data_l.enemy_color= 0;
 
     build_rv2_send_l_data(&send_data_l,send_buff,&tx_len);
     USARTSend(vision_l_usart_instance, send_buff, tx_len, USART_TRANSFER_DMA); // 和视觉通信使用IT,防止和接收使用的DMA冲突

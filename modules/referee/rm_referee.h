@@ -18,6 +18,8 @@ typedef struct
 	uint16_t Receiver_Robot_ID; // 机器人车间通信时接收者的ID，必须和本机器人同颜色
 } referee_id_t;
 
+// 0是红色，1是蓝色
+
 // 此结构体包含裁判系统接收数据以及UI绘制与机器人车间通信的相关信息
 typedef struct
 {
