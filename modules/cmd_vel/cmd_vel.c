@@ -5,7 +5,7 @@
  * @version: 
  * @Date: 2025-02-01 20:34:56
  * @LastEditors:  
- * @LastEditTime: 2025-03-17 19:24:30
+ * @LastEditTime: 2025-03-18 17:41:38
  */
 
 #include "cmd_vel.h"
@@ -48,12 +48,12 @@ static void Cmd_vel_Parse(const uint8_t *cmd_vel_buf)
     // if(checksum == cmd_vel_buf[25]) // 校验正确
     // {
         // 解析数据改为在sentry_chassis项目，gimal只作转发
-        // memcpy(&radar_ctrl.linear.x, &cmd_vel_buf[1], sizeof(float));
-        // memcpy(&radar_ctrl.linear.y, &cmd_vel_buf[5], sizeof(float));
-        // memcpy(&radar_ctrl.linear.z, &cmd_vel_buf[9], sizeof(float));
-        // memcpy(&radar_ctrl.angular.x, &cmd_vel_buf[13], sizeof(float));
-        // memcpy(&radar_ctrl.angular.y, &cmd_vel_buf[17], sizeof(float));
-        // memcpy(&radar_ctrl.angular.z, &cmd_vel_buf[21], sizeof(float));
+        memcpy(&radar_ctrl.linear.x, &cmd_vel_buf[1], sizeof(float));
+        memcpy(&radar_ctrl.linear.y, &cmd_vel_buf[5], sizeof(float));
+        memcpy(&radar_ctrl.linear.z, &cmd_vel_buf[9], sizeof(float));
+        memcpy(&radar_ctrl.angular.x, &cmd_vel_buf[13], sizeof(float));
+        memcpy(&radar_ctrl.angular.y, &cmd_vel_buf[17], sizeof(float));
+        memcpy(&radar_ctrl.angular.z, &cmd_vel_buf[21], sizeof(float));
 
         memcpy(&low_contr[0], cmd_vel_buf, 25);
         memcpy(&low_contr[25], gimbal_imu_data, sizeof(attitude_t));
