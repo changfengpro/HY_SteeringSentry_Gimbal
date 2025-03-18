@@ -1,78 +1,70 @@
 
 
 
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:241:5, State=BP_STATE_DISABLED
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:284:9, State=BP_STATE_DISABLED
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:407:9, State=BP_STATE_DISABLED
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:411:9, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:275:5, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:335:1, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:408:9, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:424:9, State=BP_STATE_DISABLED
 Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/cmd_vel/cmd_vel.c:65, State=BP_STATE_DISABLED
 Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/cmd_vel/cmd_vel.c:70:9, State=BP_STATE_DISABLED
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/referee_transport/referee_transport.c:59:5, State=BP_STATE_DISABLED
-GraphedExpression="time_T", Color=#e56a6f, Show=0
-OpenDocument="startup_stm32h723xx.s", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/startup_stm32h723xx.s", Line=50
-OpenDocument="rv2_protocal_l.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/master_machine_left/rv2_protocal_l.c", Line=62
+OpenDocument="master_process.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/master_machine/master_process.c", Line=57
 OpenDocument="main.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/Core/Src/main.c", Line=71
-OpenDocument="master_process_l.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/master_machine_left/master_process_l.c", Line=102
-OpenDocument="rv2_protocal.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/master_machine/rv2_protocal.c", Line=51
-OpenDocument="master_process.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/master_machine/master_process.c", Line=73
-OpenDocument="robot_task.h", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/robot_task.h", Line=64
-OpenDocument="robot_cmd.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/cmd/robot_cmd.c", Line=48
+OpenDocument="startup_stm32h723xx.s", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/startup_stm32h723xx.s", Line=50
+OpenDocument="stm32h7xx_hal_uart.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c", Line=1386
+OpenDocument="cmd_vel.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/cmd_vel/cmd_vel.c", Line=24
 OpenDocument="bsp_dwt.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/bsp/dwt/bsp_dwt.c", Line=86
-OpenDocument="gimbal.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c", Line=344
+OpenDocument="gimbal.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c", Line=230
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=0, w=601, h=97, TabPos=1, TopOfStack=0, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=508, h=353, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=601, h=97, TabPos=0, TopOfStack=1, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=0, w=601, h=177, TabPos=1, TopOfStack=0, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=508, h=352, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=601, h=177, TabPos=0, TopOfStack=1, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=670, h=269, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x240043E7
-OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=1, w=508, h=312, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=1, w=508, h=313, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Data Sampling", DockArea=BOTTOM, x=1, y=0, w=706, h=269, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=RIGHT, x=0, y=1, w=601, h=551, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="255;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="652;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="627;0"
+OpenWindow="Timeline", DockArea=RIGHT, x=0, y=1, w=601, h=471, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="179;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="416;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="391;0"
 OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=462, h=269, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
 TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[100;100;100;100;100;101]
 TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[239;100;100;100;875]
-TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" time_T"], ColWidths=[100;100;100]
-TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[100;100;100;112;119;100;100;100;100]
+TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time"], ColWidths=[100;100]
+TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[100;100;100;100;100;100;100;100;100]
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
 TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[205;145;126;100]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
 TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;359]
-WatchedExpression="yaw_r_motor", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="vision_gimbal_data", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="(pitch_r_motor)->measure", DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="gimbal_cmd_recv", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="pitch_r_motor", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="test_bias", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="test_t_bias", DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="shoot_r", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="gimbal_IMU_data", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="yaw_l_motor", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="pitch_l_motor", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="gimbal_cmd_recv", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="rc_data", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="gimbal_cmd_send", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="shoot_cmd_send", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="shoot_cmd_recv", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="shoot_l", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="gimbal_imu_data", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="Gimbal_Base", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="low_contr", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="referee_data", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="cmd_vel_usart_instance", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="game_state", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="huart7", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="referee_data_usart_instance", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="test_buff", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="sint", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="time_T", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="time", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="robot_cmd.c::vision_recv_data_l", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="send_data", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="send_data_l", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="robot_cmd.c::vision_recv_data_r", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="robot_cmd.c::vision_recv_data_l", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="rv2_send_data", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="rv2_send_l_data", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="vision_l_usart_instance", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="vision_usart_instance", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
-WatchedExpression="master_process_l.c::VisionSend_L::send_buff", RefreshRate=5, DisplayFormat=DISPLAY_FORMAT_HEX, Window=Watched Data 1
+WatchedExpression="yaw_r_motor", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="vision_gimbal_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="gimbal_cmd_recv", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="pitch_r_motor", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="test_bias", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="test_t_bias", Window=Watched Data 1
+WatchedExpression="shoot_r", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="gimbal_IMU_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="yaw_l_motor", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="pitch_l_motor", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="gimbal_cmd_recv", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="rc_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="gimbal_cmd_send", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="shoot_cmd_send", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="shoot_cmd_recv", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="shoot_l", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="gimbal_imu_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="Gimbal_Base", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="low_contr", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="referee_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="cmd_vel_usart_instance", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="game_state", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="referee_data_usart_instance", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="test_buff", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="send_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="send_data_l", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="robot_cmd.c::vision_recv_data_r", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="robot_cmd.c::vision_recv_data_l", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="rv2_send_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="rv2_send_l_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="vision_l_usart_instance", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="vision_usart_instance", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="master_process_l.c::VisionSend_L::send_buff", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="vision_l_cnt", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="vision_r_cnt", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="recv_data_l", RefreshRate=5, Window=Watched Data 1

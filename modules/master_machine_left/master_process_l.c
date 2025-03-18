@@ -63,6 +63,8 @@ static USARTInstance *vision_l_usart_instance;
  */
 static void VisionLOfflineCallback(void *id)
 {
+    recv_data_l.offline=1;
+
 #ifdef VISION_USE_UART
     USARTServiceInit(vision_l_usart_instance);
 #endif // !VISION_USE_UART
