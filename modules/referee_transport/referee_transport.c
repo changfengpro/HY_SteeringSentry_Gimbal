@@ -5,7 +5,7 @@
  * @version: 
  * @Date: 2025-03-13 06:34:23
  * @LastEditors:  
- * @LastEditTime: 2025-03-18 16:04:03
+ * @LastEditTime: 2025-03-18 16:28:05
  */
 #include "referee_transport.h"
 
@@ -15,8 +15,9 @@
 
 static referee_info_t referee_data;
 static uint8_t referee_init_flag;
-static uint8_t game_state, robot_HP;
-uint8_t test_buff[128];
+static uint16_t game_state, robot_HP;;
+
+uint16_t test_buff[128];
 static USARTInstance *referee_data_usart_instance;  // 裁判系统数据转发串口实例
 static DaemonInstance *referee_data_daemo_instance; // 裁判系统数据转发进程守护实例
 
@@ -51,14 +52,14 @@ static void RefereeDataParse(const uint8_t *referee_data_buf)
  * @return 
  */
 static void RefereeDataRxCallback()
-{
+{   
     DaemonReload(referee_data_daemo_instance);   //先喂狗
     RefereeDataParse(referee_data_usart_instance->recv_buff);
     game_state = referee_data.GameState.game_progress;
     robot_HP = referee_data.GameRobotState.current_HP;
     for(int i = 0; i < 64; i++)
     {
-        test_buff[i] = game_state;
+        test_buff[i] = game_state;  
     }
     for(int i = 65; i < 128; i++)
     {
