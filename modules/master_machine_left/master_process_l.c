@@ -80,6 +80,8 @@ static USARTInstance *vision_l_usart_instance;
  */
 static void DecodeVision()
 {
+    static uint32_t vision_l_cnt;
+    vision_l_cnt++;
     recv_data_l.offline = 0;
     DaemonReload(vision_l_daemon_instance); // 喂狗
 

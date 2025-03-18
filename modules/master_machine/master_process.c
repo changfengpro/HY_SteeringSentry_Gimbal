@@ -63,6 +63,7 @@ static USARTInstance *vision_usart_instance;
  */
 static void VisionOfflineCallback(void *id)
 {
+    recv_data.offline=1;
 #ifdef VISION_USE_UART
     USARTServiceInit(vision_usart_instance);
 #endif // !VISION_USE_UART
@@ -80,6 +81,8 @@ static USARTInstance *vision_usart_instance;
  */
 static void DecodeVision()
 {
+    static uint32_t vision_r_cnt;
+    vision_r_cnt++;
     recv_data.offline = 0;
     DaemonReload(vision_daemon_instance); // 喂狗
 

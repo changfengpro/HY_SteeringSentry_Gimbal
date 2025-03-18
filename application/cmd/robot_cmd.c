@@ -60,9 +60,9 @@ BMI088_Data_t bmi088_data;
 void RobotCMDInit()
 {
     rc_data = RemoteControlInit(&huart5);   // 修改为对应串口,注意如果是自研板dbus协议串口需选用添加了反相器的那个
-    vision_recv_data_l = VisionLeftInit(&huart8); // 视觉通信串口
+    vision_recv_data_l = VisionLeftInit(&huart7); // 视觉通信串口
     vision_recv_data_r = VisionInit(&huart9); // 视觉通信串口
-    radar_data = CmdVelControlInit(&huart7); // 导航控制
+    radar_data = CmdVelControlInit(&huart8); // 导航控制
     referee_recv_data = RefereeDataTransportInit(&huart10);
     // radar_data = CmdVelControlInit(&huart1);
     // vision_recv_data = VisionInit(&huart7);
@@ -333,7 +333,7 @@ void RobotCMDTask()
     else if (switch_is_mid(rc_data[TEMP].rc.switch_left)) // 控器左侧开关状态为[中],视觉导航模式
         VisionRadaControlSet();
 
-    // VisionRadaControlSet();
+    VisionRadaControlSet();
 
     EmergencyHandler(); // 处理模块离线和遥控器急停等紧急情况
 
