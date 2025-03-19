@@ -309,7 +309,7 @@ static void ScanTargetL()
     if(vision_recv_data_l.target_state == NO_TARGET && (time_T > 6));
     {
         diff_time += time - last_time;
-        if(diff_time > 500)
+        if(diff_time > 1000)
         {   
 
             vision_gimbal_data.Vision_set_l_yaw = ((YAW_L_LIMIT_MIN + YAW_L_LIMIT_MAX) / 2) + (((YAW_L_LIMIT_MAX - YAW_L_LIMIT_MIN) / 2) * arm_sin_f32(time_T));
@@ -449,12 +449,12 @@ void GimbalTask()
     case GIMBAL_VISION: 
         // DJIMotorEnable(yaw_l_motor);
         // DJIMotorEnable(pitch_l_motor);
-        DJIMotorEnable(yaw_r_motor);
-        DJIMotorEnable(pitch_r_motor);
+        // DJIMotorEnable(yaw_r_motor);
+        // DJIMotorEnable(pitch_r_motor);
         DJIMotorStop(yaw_l_motor);
         DJIMotorStop(pitch_l_motor);
-        // DJIMotorStop(yaw_r_motor);
-        // DJIMotorStop(pitch_r_motor);
+        DJIMotorStop(yaw_r_motor);
+        DJIMotorStop(pitch_r_motor);
         // DMMotorEnable(Gimbal_Base);
         DJIMotorChangeFeed(yaw_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(yaw_r_motor, ANGLE_LOOP, MOTOR_FEED);
