@@ -13,7 +13,7 @@
 
 #define YAW_L_INIT_ANGLE 90.0f // 云台初始角度
 #define PITCH_L_INIT_ANGLE 164.0f // 云台初始俯仰角度   
-#define YAW_R_INIT_ANGLE 30.0f // 云台初始角度
+#define YAW_R_INIT_ANGLE 330.0f // 云台初始角度
 #define PITCH_R_INIT_ANGLE 120.0f // 云台初始俯仰角度   -118.0f
 #define PITCH_R_MIN 25 // 右云台经IMU测出下限时的pitch角度 25.3
 #define PITCH_L_MIN 22
@@ -381,7 +381,7 @@ void GimbalTask()
         vision_gimbal_data.yaw_r_motor_angle = yaw_l_motor->measure.angle_single_round;
         vision_gimbal_data.pitch_r_motor_angle = pitch_l_motor->measure.total_angle;
 
-        vision_gimbal_data.Vision_r_yaw_tar = gimbal_cmd_recv.yaw2;
+        vision_gimbal_data.Vision_r_yaw_tar = gimbal_cmd_recv.yaw2 + 2.0f;
         vision_gimbal_data.Vision_r_pitch_tar = gimbal_cmd_recv.pitch2;
         vision_gimbal_data.yaw_r_motor_angle = yaw_r_motor->measure.angle_single_round;
         vision_gimbal_data.pitch_r_motor_angle = pitch_r_motor->measure.total_angle;

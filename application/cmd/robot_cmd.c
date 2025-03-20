@@ -62,7 +62,7 @@ void RobotCMDInit()
 {
     rc_data = RemoteControlInit(&huart5);   // 修改为对应串口,注意如果是自研板dbus协议串口需选用添加了反相器的那个
     vision_recv_data_l = VisionLeftInit(&huart1); // 视觉通信串口
-    vision_recv_data_r = VisionInit(&huart7); // 视觉通信串口
+    vision_recv_data_r = VisionInit(&huart9); // 视觉通信串口
     radar_data = CmdVelControlInit(&huart8); // 导航控制
     referee_recv_data = RefereeDataTransportInit(&huart10);
     // radar_data = CmdVelControlInit(&huart1);
@@ -197,7 +197,7 @@ static void VisionRadaControlSet()
     if(vision_recv_data_r->fire_mode == NO_FIRE)  shoot_cmd_send_r.friction_mode = FRICTION_OFF;
     if(vision_recv_data_r->fire_mode == AUTO_FIRE) shoot_cmd_send_r.friction_mode = FRICTION_ON;
     shoot_cmd_send_l.shoot_rate = 10;
-    shoot_cmd_send_l.shoot_rate = 10;
+    shoot_cmd_send_r.shoot_rate = 10;
     
 }
 

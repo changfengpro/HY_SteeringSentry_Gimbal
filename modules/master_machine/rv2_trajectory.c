@@ -29,9 +29,10 @@ float t = 0.5f; // 飞行时间
 
 trajectory_target_s trajectory_target;
 
-float test_bias= 0.3;   //s_bias
+float test_s_bias= 0;   //s_bias
 float test_t_bias = 100;
-
+float test_z_bias = 0;
+ 
 /*
 @brief 单方向空气阻力弹道模型
 @param s:m 距离
@@ -234,7 +235,8 @@ void autoSolveTrajectory(float *pitch, float *yaw, float *aim_x, float *aim_y, f
     *aim_z = tar_position[idx].z + st.vzw * timeDelay;
     *aim_x = tar_position[idx].x + st.vxw * timeDelay;
     *aim_y = tar_position[idx].y + st.vyw * timeDelay;
-    st.s_bias = test_bias;
+    st.s_bias = test_s_bias;
+    st.z_bias = test_z_bias;
     //这里符号给错了
     float temp_pitch = -pitchTrajectoryCompensation(sqrt((*aim_x) * (*aim_x) + (*aim_y) * (*aim_y)) - st.s_bias,
             *aim_z + st.z_bias, st.current_v);
@@ -273,8 +275,8 @@ trajectory_target_s *rv2_trajectory_init()
 
     //以下设置参数
     st.bias_time = 10;
-    st.s_bias = 0.07;  //0.2
-    st.z_bias = 0.06;   //0.19
+    st.s_bias = 0.2;  //0.2
+    st.z_bias = 0.2;   //0.19
     st.armor_id = ARMOR_INFANTRY3;
     st.armor_num = ARMOR_NUM_NORMAL;
 
