@@ -15,13 +15,13 @@
 extern Shoot_Ctrl_Cmd_s shoot_cmd_send;      // 传递给发射的控制信息
 static ShootInstance shoot_l, shoot_r; // 左右发射机构实例
 static Publisher_t *shoot_pub;
-static Subscriber_t *vision_recv_r_data_sub;
-static Shoot_Ctrl_Cmd_s shoot_cmd_recv; // 来自cmd的发射控制信息
-static Subscriber_t *shoot_sub;
+static Subscriber_t *vision_recv_r_data_sub, *vision_recv_l_data_sub;
+static Shoot_Ctrl_Cmd_s shoot_cmd_recv_l, shoot_cmd_recv_r; // 来自cmd的发射控制信息
+static Subscriber_t *shoot_sub_l, *shoot_sub_r;
 static Shoot_Upload_Data_s shoot_feedback_data; // 来自cmd的发射控制信息
 static Subscriber_t *vision_gimbal_sub;
 static Vision_Gimbal_Data_s vision_gimbal_data_recv;
-static Vision_Recv_s vision_recv_data_2_shoot_r;
+static Vision_Recv_s vision_recv_data_2_shoot_r, vision_recv_data_2_shoot_l;
 static float output[2]; //存储拨弹电机的输出值
 static int count[2] = {0, 0};       //用于堵转计数
 static int enter_count[2]; //用于进入计数
@@ -166,35 +166,47 @@ void ShootInit()
     shoot_r.stall_flag = 0;
 
     shoot_pub = PubRegister("shoot_feed", sizeof(Shoot_Upload_Data_s));
-    shoot_sub = SubRegister("shoot_cmd", sizeof(Shoot_Ctrl_Cmd_s));
+    shoot_sub_l = SubRegister("shoot_cmd_l", sizeof(Shoot_Ctrl_Cmd_s));
+    shoot_sub_r = SubRegister("shoot_cmd_r", sizeof(Shoot_Ctrl_Cmd_s));
     vision_gimbal_sub = SubRegister("vision_gimbal_data", sizeof(Vision_Gimbal_Data_s));
-    vision_recv_r_data_sub = SubRegister("vision_recv_data", sizeof(Vision_Recv_s));
+    vision_recv_l_data_sub = SubRegister("vision_recv_l_data", sizeof(Vision_Recv_s));
+    vision_recv_r_data_sub = SubRegister("vision_recv_r_data", sizeof(Vision_Recv_s));
 }
 
 /* 机器人发射机构控制核心任务 */
 void ShootTask()
 {   
     // 从cmd获取控制数据
-    SubGetMessage(shoot_sub, &shoot_cmd_recv);
+    SubGetMessage(shoot_sub_l, &shoot_cmd_recv_l);
+    SubGetMessage(shoot_sub_r, &shoot_cmd_recv_r);
     SubGetMessage(vision_gimbal_sub, &vision_gimbal_data_recv);
+    SubGetMessage(vision_recv_l_data_sub, &vision_recv_data_2_shoot_l);
     SubGetMessage(vision_recv_r_data_sub, &vision_recv_data_2_shoot_r);
 
     if(vision_gimbal_data_recv.vision_statue == GIMBAL_VISION)
     {
-        shoot_cmd_recv.shoot_mode = SHOOT_OFF;
-        shoot_cmd_recv.friction_mode = FRICTION_OFF;
+        shoot_cmd_recv_l.shoot_mode = SHOOT_ON;
+        shoot_cmd_recv_l.friction_mode = FRICTION_ON;
+
+        shoot_cmd_recv_r.shoot_mode = SHOOT_ON;
+        shoot_cmd_recv_r.friction_mode = FRICTION_ON;
         // if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 1.0 && vision_recv_data_2_shoot.target_state == TRACKING 
         //  && (vision_gimbal_data_recv.Vision_set_r_pitch - vision_gimbal_data_recv.pitch_r_motor_angle) < 0.8)
         if((vision_gimbal_data_recv.Vision_set_r_yaw - vision_gimbal_data_recv.yaw_r_motor_angle) < 0.8 && vision_recv_data_2_shoot_r.target_state == TRACKING )
         {
-            shoot_cmd_recv.load_mode = LOAD_BURSTFIRE;
+            shoot_cmd_recv_l.load_mode = LOAD_BURSTFIRE;
+        } 
+
+        if((vision_gimbal_data_recv.Vision_set_l_yaw - vision_gimbal_data_recv.yaw_l_motor_angle) < 0.8 && vision_recv_data_2_shoot_l.target_state == TRACKING )
+        {
+            shoot_cmd_recv_l.load_mode = LOAD_BURSTFIRE;
         } 
     }
     // shoot_cmd_recv.load_mode = LOAD_BURSTFIRE;
     
 
     // 对shoot mode等于SHOOT_STOP的情况特殊处理,直接停止所有电机(紧急停止)
-    if (shoot_cmd_recv.shoot_mode == SHOOT_OFF)
+    if (shoot_cmd_recv_l.shoot_mode == SHOOT_OFF || shoot_cmd_recv_r.shoot_mode == SHOOT_OFF)
     {
         DJIMotorStop(shoot_l.friction_l);
         DJIMotorStop(shoot_l.friction_r);
@@ -220,7 +232,7 @@ void ShootTask()
     //     return;
 
     // 若不在休眠状态,根据robotCMD传来的控制模式进行拨盘电机参考值设定和模式切换
-    switch (shoot_cmd_recv.load_mode)
+    switch (shoot_cmd_recv_l.load_mode)
     {
     // 停止拨盘
     case LOAD_STOP:
@@ -278,8 +290,8 @@ void ShootTask()
         else
         {   DJIMotorOuterLoop(shoot_l.loader, SPEED_LOOP);                                              // 切换到速度环
             DJIMotorOuterLoop(shoot_r.loader, SPEED_LOOP);
-            DJIMotorSetRef(shoot_l.loader, shoot_cmd_recv.shoot_rate * 360 * REDUCTION_RATIO_LOADER / 8); // 设定速度
-            DJIMotorSetRef(shoot_r.loader, shoot_cmd_recv.shoot_rate * 360 * REDUCTION_RATIO_LOADER / 8); // 设定速度
+            DJIMotorSetRef(shoot_l.loader, shoot_cmd_recv_l.shoot_rate * 360 * REDUCTION_RATIO_LOADER / 8); // 设定速度
+            DJIMotorSetRef(shoot_r.loader, shoot_cmd_recv_r.shoot_rate * 360 * REDUCTION_RATIO_LOADER / 8); // 设定速度
 
         // x颗/秒换算成速度: 已知一圈的载弹量,由此计算出1s需要转的角度,注意换算角速度(DJIMotor的速度单位是angle per second)
         }
@@ -298,10 +310,10 @@ void ShootTask()
     }
 
     // 确定是否开启摩擦轮,后续可能修改为键鼠模式下始终开启摩擦轮(上场时建议一直开启)
-    if (shoot_cmd_recv.friction_mode == FRICTION_ON)
+    if (shoot_cmd_recv_l.friction_mode == FRICTION_ON || shoot_cmd_recv_r.friction_mode == FRICTION_ON)
     {
         // 根据收到的弹速设置设定摩擦轮电机参考值,需实测后填入
-        switch (shoot_cmd_recv.bullet_speed)
+        switch (shoot_cmd_recv_l.bullet_speed)
         {
         case SMALL_AMU_15:
             DJIMotorSetRef(shoot_l.friction_l, 0);
@@ -339,14 +351,14 @@ void ShootTask()
     }
 
     // 开关弹舱盖
-    if (shoot_cmd_recv.lid_mode == LID_CLOSE)
-    {
-        //...
-    }
-    else if (shoot_cmd_recv.lid_mode == LID_OPEN)
-    {
-        //...
-    }
+    // if (shoot_cmd_recv.lid_mode == LID_CLOSE)
+    // {
+    //     //...
+    // }
+    // else if (shoot_cmd_recv.lid_mode == LID_OPEN)
+    // {
+    //     //...
+    // }
 
     // 反馈数据,目前暂时没有要设定的反馈数据,后续可能增加应用离线监测以及卡弹反馈
     PubPushMessage(shoot_pub, (void *)&shoot_feedback_data);

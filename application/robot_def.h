@@ -205,6 +205,9 @@ typedef struct
     float Vision_set_l_pitch;  
     float Vision_set_r_pitch;  
 
+    float yaw_l_motor_angle;
+    float pitch_l_motor_angle;
+
     float yaw_r_motor_angle;
     float pitch_r_motor_angle;
 

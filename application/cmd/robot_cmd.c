@@ -48,9 +48,10 @@ static Publisher_t *vision_recv_l_data_pub, *vision_recv_r_data_pub;
 static Gimbal_Ctrl_Cmd_s gimbal_cmd_send;      // 传递给云台的控制信息
 static Gimbal_Upload_Data_s gimbal_fetch_data; // 从云台获取的反馈信息
 
-static Publisher_t *shoot_cmd_pub;           // 发射控制消息发布者
+static Publisher_t *shoot_cmd_pub_l, *shoot_cmd_pub_r;           // 发射控制消息发布者
 static Subscriber_t *shoot_feed_sub;         // 发射反馈信息订阅者
-Shoot_Ctrl_Cmd_s shoot_cmd_send;      // 传递给发射的控制信息
+Shoot_Ctrl_Cmd_s shoot_cmd_send_l;      // 传递给发射的控制信息
+Shoot_Ctrl_Cmd_s shoot_cmd_send_r;
 static Shoot_Upload_Data_s shoot_fetch_data; // 从发射获取的反馈信息
 
 static Robot_Status_e robot_state; // 机器人整体工作状态
@@ -68,7 +69,8 @@ void RobotCMDInit()
     // vision_recv_data = VisionInit(&huart7);
     gimbal_cmd_pub = PubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
     gimbal_feed_sub = SubRegister("gimbal_feed", sizeof(Gimbal_Upload_Data_s));
-    shoot_cmd_pub = PubRegister("shoot_cmd", sizeof(Shoot_Ctrl_Cmd_s));
+    shoot_cmd_pub_l = PubRegister("shoot_cmd_l", sizeof(Shoot_Ctrl_Cmd_s));
+    shoot_cmd_pub_r = PubRegister("shoot_cmd_r", sizeof(Shoot_Ctrl_Cmd_s));
     shoot_feed_sub = SubRegister("shoot_feed", sizeof(Shoot_Upload_Data_s));
     vision_recv_l_data_pub = PubRegister("vision_recv_l_data", sizeof(Vision_Recv_s));
     vision_recv_r_data_pub = PubRegister("vision_recv_r_data", sizeof(Vision_Recv_s));
@@ -168,17 +170,17 @@ static void RemoteControlSet()
         ; // 弹舱舵机控制,待添加servo_motor模块,关闭
 
     // 摩擦轮控制,拨轮向上打为负,向下为正
-    if (rc_data[TEMP].rc.dial < -100) // 向上超过100,打开摩擦轮
-        shoot_cmd_send.friction_mode = FRICTION_ON;
-    else
-        shoot_cmd_send.friction_mode = FRICTION_OFF;
-    // 拨弹控制,遥控器固定为一种拨弹模式,可自行选择
-    if (rc_data[TEMP].rc.dial < -500)
-        shoot_cmd_send.load_mode = LOAD_BURSTFIRE;
-    else
-        shoot_cmd_send.load_mode = LOAD_STOP;
-    // 射频控制,固定每秒1发,后续可以根据左侧拨轮的值大小切换射频,
-    shoot_cmd_send.shoot_rate = 10;
+    // if (rc_data[TEMP].rc.dial < -100) // 向上超过100,打开摩擦轮
+    //     shoot_cmd_send.friction_mode = FRICTION_ON;
+    // else
+    //     shoot_cmd_send.friction_mode = FRICTION_OFF;
+    // // 拨弹控制,遥控器固定为一种拨弹模式,可自行选择
+    // if (rc_data[TEMP].rc.dial < -500)
+    //     shoot_cmd_send.load_mode = LOAD_BURSTFIRE;
+    // else
+    //     shoot_cmd_send.load_mode = LOAD_STOP;
+    // // 射频控制,固定每秒1发,后续可以根据左侧拨轮的值大小切换射频,
+    // shoot_cmd_send.shoot_rate = 10;
 }
 
 // /**
@@ -192,95 +194,96 @@ static void VisionRadaControlSet()
     gimbal_cmd_send.pitch1 = vision_recv_data_l->pitch;
     gimbal_cmd_send.yaw2 = vision_recv_data_r->yaw;
     gimbal_cmd_send.pitch2 = vision_recv_data_r->pitch;
-    if(vision_recv_data_r->fire_mode == NO_FIRE)  shoot_cmd_send.friction_mode = FRICTION_OFF;
-    if(vision_recv_data_r->fire_mode == AUTO_FIRE) shoot_cmd_send.friction_mode = FRICTION_ON;
-    shoot_cmd_send.shoot_rate = 10;
+    if(vision_recv_data_r->fire_mode == NO_FIRE)  shoot_cmd_send_r.friction_mode = FRICTION_OFF;
+    if(vision_recv_data_r->fire_mode == AUTO_FIRE) shoot_cmd_send_r.friction_mode = FRICTION_ON;
+    shoot_cmd_send_l.shoot_rate = 10;
+    shoot_cmd_send_l.shoot_rate = 10;
     
 }
 
-/**
- * @brief 输入为键鼠时模式和控制量设置
- *
- */
-static void MouseKeySet()
-{
-    chassis_cmd_send.vx = rc_data[TEMP].key[KEY_PRESS].w * 300 - rc_data[TEMP].key[KEY_PRESS].s * 300; // 系数待测
-    chassis_cmd_send.vy = rc_data[TEMP].key[KEY_PRESS].s * 300 - rc_data[TEMP].key[KEY_PRESS].d * 300;
+// /**
+//  * @brief 输入为键鼠时模式和控制量设置
+//  *
+//  */
+// static void MouseKeySet()
+// {
+//     chassis_cmd_send.vx = rc_data[TEMP].key[KEY_PRESS].w * 300 - rc_data[TEMP].key[KEY_PRESS].s * 300; // 系数待测
+//     chassis_cmd_send.vy = rc_data[TEMP].key[KEY_PRESS].s * 300 - rc_data[TEMP].key[KEY_PRESS].d * 300;
 
-    // gimbal_cmd_send.yaw += (float)rc_data[TEMP].mouse.x / 660 * 10; // 系数待测
-    // gimbal_cmd_send.pitch += (float)rc_data[TEMP].mouse.y / 660 * 10;
+//     // gimbal_cmd_send.yaw += (float)rc_data[TEMP].mouse.x / 660 * 10; // 系数待测
+//     // gimbal_cmd_send.pitch += (float)rc_data[TEMP].mouse.y / 660 * 10;
 
-    switch (rc_data[TEMP].key_count[KEY_PRESS][Key_Z] % 3) // Z键设置弹速
-    {
-    case 0:
-        shoot_cmd_send.bullet_speed = 15;
-        break;
-    case 1:
-        shoot_cmd_send.bullet_speed = 18;
-        break;
-    default:
-        shoot_cmd_send.bullet_speed = 30;
-        break;
-    }
-    switch (rc_data[TEMP].key_count[KEY_PRESS][Key_E] % 4) // E键设置发射模式
-    {
-    case 0:
-        shoot_cmd_send.load_mode = LOAD_STOP;
-        break;
-    case 1:
-        shoot_cmd_send.load_mode = LOAD_1_BULLET;
-        break;
-    case 2:
-        shoot_cmd_send.load_mode = LOAD_3_BULLET;
-        break;
-    default:
-        shoot_cmd_send.load_mode = LOAD_BURSTFIRE;
-        break;
-    }
-    switch (rc_data[TEMP].key_count[KEY_PRESS][Key_R] % 2) // R键开关弹舱
-    {
-    case 0:
-        shoot_cmd_send.lid_mode = LID_OPEN;
-        break;
-    default:
-        shoot_cmd_send.lid_mode = LID_CLOSE;
-        break;
-    }
-    switch (rc_data[TEMP].key_count[KEY_PRESS][Key_F] % 2) // F键开关摩擦轮
-    {
-    case 0:
-        shoot_cmd_send.friction_mode = FRICTION_OFF;
-        break;
-    default:
-        shoot_cmd_send.friction_mode = FRICTION_ON;
-        break;
-    }
-    switch (rc_data[TEMP].key_count[KEY_PRESS][Key_C] % 4) // C键设置底盘速度
-    {
-    case 0:
-        chassis_cmd_send.chassis_speed_buff = 40;
-        break;
-    case 1:
-        chassis_cmd_send.chassis_speed_buff = 60;
-        break;
-    case 2:
-        chassis_cmd_send.chassis_speed_buff = 80;
-        break;
-    default:
-        chassis_cmd_send.chassis_speed_buff = 100;
-        break;
-    }
-    switch (rc_data[TEMP].key[KEY_PRESS].shift) // 待添加 按shift允许超功率 消耗缓冲能量
-    {
-    case 1:
+//     switch (rc_data[TEMP].key_count[KEY_PRESS][Key_Z] % 3) // Z键设置弹速
+//     {
+//     case 0:
+//         shoot_cmd_send.bullet_speed = 15;
+//         break;
+//     case 1:
+//         shoot_cmd_send.bullet_speed = 18;
+//         break;
+//     default:
+//         shoot_cmd_send.bullet_speed = 30;
+//         break;
+//     }
+//     switch (rc_data[TEMP].key_count[KEY_PRESS][Key_E] % 4) // E键设置发射模式
+//     {
+//     case 0:
+//         shoot_cmd_send.load_mode = LOAD_STOP;
+//         break;
+//     case 1:
+//         shoot_cmd_send.load_mode = LOAD_1_BULLET;
+//         break;
+//     case 2:
+//         shoot_cmd_send.load_mode = LOAD_3_BULLET;
+//         break;
+//     default:
+//         shoot_cmd_send.load_mode = LOAD_BURSTFIRE;
+//         break;
+//     }
+//     switch (rc_data[TEMP].key_count[KEY_PRESS][Key_R] % 2) // R键开关弹舱
+//     {
+//     case 0:
+//         shoot_cmd_send.lid_mode = LID_OPEN;
+//         break;
+//     default:
+//         shoot_cmd_send.lid_mode = LID_CLOSE;
+//         break;
+//     }
+//     switch (rc_data[TEMP].key_count[KEY_PRESS][Key_F] % 2) // F键开关摩擦轮
+//     {
+//     case 0:
+//         shoot_cmd_send.friction_mode = FRICTION_OFF;
+//         break;
+//     default:
+//         shoot_cmd_send.friction_mode = FRICTION_ON;
+//         break;
+//     }
+//     switch (rc_data[TEMP].key_count[KEY_PRESS][Key_C] % 4) // C键设置底盘速度
+//     {
+//     case 0:
+//         chassis_cmd_send.chassis_speed_buff = 40;
+//         break;
+//     case 1:
+//         chassis_cmd_send.chassis_speed_buff = 60;
+//         break;
+//     case 2:
+//         chassis_cmd_send.chassis_speed_buff = 80;
+//         break;
+//     default:
+//         chassis_cmd_send.chassis_speed_buff = 100;
+//         break;
+//     }
+//     switch (rc_data[TEMP].key[KEY_PRESS].shift) // 待添加 按shift允许超功率 消耗缓冲能量
+//     {
+//     case 1:
 
-        break;
+//         break;
 
-    default:
+//     default:
 
-        break;
-    }
-}
+//         break;
+//     }
+// }
 
 /**
  * @brief  紧急停止,包括遥控器左上侧拨轮打满/重要模块离线/双板通信失效等
@@ -289,27 +292,27 @@ static void MouseKeySet()
  * @todo   后续修改为遥控器离线则电机停止(关闭遥控器急停),通过给遥控器模块添加daemon实现
  *
  */
-static void EmergencyHandler()
-{
-    // 拨轮的向下拨超过一半进入急停模式.注意向打时下拨轮是正
-    if (rc_data[TEMP].rc.dial > 300 || robot_state == ROBOT_STOP) // 还需添加重要应用和模块离线的判断
-    {
-        robot_state = ROBOT_STOP;
-        gimbal_cmd_send.gimbal_mode = GIMBAL_ZERO_FORCE;
-        chassis_cmd_send.chassis_mode = CHASSIS_ZERO_FORCE;
-        shoot_cmd_send.shoot_mode = SHOOT_OFF;
-        shoot_cmd_send.friction_mode = FRICTION_OFF;
-        shoot_cmd_send.load_mode = LOAD_STOP;
-        LOGERROR("[CMD] emergency stop!");
-    }
-    // 遥控器右侧开关为[上],恢复正常运行
-    if (switch_is_up(rc_data[TEMP].rc.switch_right))
-    {
-        robot_state = ROBOT_READY;
-        shoot_cmd_send.shoot_mode = SHOOT_ON;
-        LOGINFO("[CMD] reinstate, robot ready");
-    }
-}
+// static void EmergencyHandler()
+// {
+//     // 拨轮的向下拨超过一半进入急停模式.注意向打时下拨轮是正
+//     if (rc_data[TEMP].rc.dial > 300 || robot_state == ROBOT_STOP) // 还需添加重要应用和模块离线的判断
+//     {
+//         robot_state = ROBOT_STOP;
+//         gimbal_cmd_send.gimbal_mode = GIMBAL_ZERO_FORCE;
+//         chassis_cmd_send.chassis_mode = CHASSIS_ZERO_FORCE;
+//         shoot_cmd_send.shoot_mode = SHOOT_OFF;
+//         shoot_cmd_send.friction_mode = FRICTION_OFF;
+//         shoot_cmd_send.load_mode = LOAD_STOP;
+//         LOGERROR("[CMD] emergency stop!");
+//     }
+//     // 遥控器右侧开关为[上],恢复正常运行
+//     if (switch_is_up(rc_data[TEMP].rc.switch_right))
+//     {
+//         robot_state = ROBOT_READY;
+//         shoot_cmd_send.shoot_mode = SHOOT_ON;
+//         LOGINFO("[CMD] reinstate, robot ready");
+//     }
+// }
 
 /* 机器人核心控制任务,200Hz频率运行(必须高于视觉发送频率) */
 void RobotCMDTask()
@@ -332,14 +335,14 @@ void RobotCMDTask()
     // 根据遥控器左侧开关,确定当前使用的控制模式为遥控器调试还是键鼠
     if (switch_is_down(rc_data[TEMP].rc.switch_left)) // 遥控器左侧开关状态为[下],遥控器控制
         RemoteControlSet();
-    else if (switch_is_up(rc_data[TEMP].rc.switch_left)) // 遥控器左侧开关状态为[上],键盘控制
-        MouseKeySet();
+    else if (switch_is_up(rc_data[TEMP].rc.switch_left)); // 遥控器左侧开关状态为[上],键盘控制
+        // MouseKeySet();
     else if (switch_is_mid(rc_data[TEMP].rc.switch_left)) // 控器左侧开关状态为[中],视觉导航模式
         VisionRadaControlSet();
 
     VisionRadaControlSet();
 
-    EmergencyHandler(); // 处理模块离线和遥控器急停等紧急情况
+    // EmergencyHandler(); // 处理模块离线和遥控器急停等紧急情况
 
     // 设置视觉发送数据,还需增加加速度和角速度数据
     // VisionSetFlag(chassis_fetch_data.enemy_color,,chassis_fetch_data.bullet_speed)
@@ -352,7 +355,8 @@ void RobotCMDTask()
 #ifdef GIMBAL_BOARD
     CANCommSend(cmd_can_comm, (void *)&chassis_cmd_send);
 #endif // GIMBAL_BOARD
-    PubPushMessage(shoot_cmd_pub, (void *)&shoot_cmd_send);
+    PubPushMessage(shoot_cmd_pub_l, (void *)&shoot_cmd_send_l);
+    PubPushMessage(shoot_cmd_pub_r, (void *)&shoot_cmd_send_r);
     PubPushMessage(gimbal_cmd_pub, (void *)&gimbal_cmd_send);
     PubPushMessage(vision_recv_l_data_pub, (void *)vision_recv_data_l);
     PubPushMessage(vision_recv_r_data_pub, (void *)vision_recv_data_r);
