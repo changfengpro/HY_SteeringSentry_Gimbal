@@ -13,7 +13,7 @@
 
 #define YAW_L_INIT_ANGLE 90.0f // 云台初始角度
 #define PITCH_L_INIT_ANGLE 164.0f // 云台初始俯仰角度   
-#define YAW_R_INIT_ANGLE -30.0f // 云台初始角度
+#define YAW_R_INIT_ANGLE 30.0f // 云台初始角度
 #define PITCH_R_INIT_ANGLE 120.0f // 云台初始俯仰角度   -118.0f
 #define PITCH_R_MIN 25 // 右云台经IMU测出下限时的pitch角度 25.3
 #define PITCH_L_MIN 22
@@ -21,11 +21,11 @@
 // 电机软件限位
 #define YAW_L_LIMIT_MIN 65
 #define YAW_L_LIMIT_MAX 270
-#define PITCH_L_LIMIT_MIN 122
+#define PITCH_L_LIMIT_MIN 144
 #define PITCH_L_LIMIT_MAX 165
 
-#define YAW_R_LIMIT_MIN -210
-#define YAW_R_LIMIT_MAX -10
+#define YAW_R_LIMIT_MIN 145
+#define YAW_R_LIMIT_MAX 345
 #define PITCH_R_LIMIT_MIN 130
 #define PITCH_R_LIMIT_MAX 140 // 联盟赛：140 不需要抬那么高 
 
@@ -63,8 +63,8 @@ void GimbalInit()
         },
         .controller_param_init_config = {
             .angle_PID = {
-                .Kp = 52, // Me:30
-                .Ki = 30,
+                .Kp = 25, // Me:30
+                .Ki = 15,
                 .Kd = 0,
                 .DeadBand = 0,
                 .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement | PID_OutputFilter,
@@ -73,8 +73,8 @@ void GimbalInit()
                 .MaxOut = 2000,
             },
             .speed_PID = {
-                .Kp = 40,  // 50
-                .Ki = 50, // 200
+                .Kp = 25,  // 50
+                .Ki = 10, // 200
                 .Kd = 0,
                 .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement |PID_OutputFilter,
                 .Output_LPF_RC=0.00649999983,
@@ -92,6 +92,7 @@ void GimbalInit()
             .close_loop_type = ANGLE_LOOP | SPEED_LOOP,
             .motor_reverse_flag = MOTOR_DIRECTION_NORMAL,
         },
+        .motor_close_type = SINGLE_ANGLE,
         .motor_type = GM6020};
 
     Motor_Init_Config_s yaw_r_config = {
@@ -130,6 +131,7 @@ void GimbalInit()
         .close_loop_type = ANGLE_LOOP | SPEED_LOOP,
         .motor_reverse_flag = MOTOR_DIRECTION_NORMAL,
     },
+    .motor_close_type = SINGLE_ANGLE,
     .motor_type = GM6020};
 
     // PITCH
@@ -272,12 +274,12 @@ static void YawAngleCalculate()
  */
 static void VisionAngleCalc()
 {   
-    vision_gimbal_data.Vision_l_yaw = yaw_l_motor->measure.total_angle - YAW_L_INIT_ANGLE;
+    vision_gimbal_data.Vision_l_yaw = yaw_l_motor->measure.angle_single_round - YAW_L_INIT_ANGLE;
     vision_gimbal_data.Vision_l_pitch = pitch_l_motor->measure.total_angle - PITCH_L_INIT_ANGLE + PITCH_L_MIN;
 
     // vision_gimbal_data.Vision_r_yaw = gimbal_IMU_data->Yaw + yaw_r_motor->measure.total_angle - YAW_R_INIT_ANGLE;
 
-    vision_gimbal_data.Vision_r_yaw = yaw_r_motor->measure.total_angle - YAW_R_INIT_ANGLE;
+    vision_gimbal_data.Vision_r_yaw = yaw_r_motor->measure.angle_single_round - YAW_R_INIT_ANGLE;
     vision_gimbal_data.Vision_r_pitch = -(pitch_r_motor->measure.total_angle  - PITCH_R_INIT_ANGLE) + PITCH_R_MIN;
 
     vision_gimbal_data.Vision_set_l_yaw = vision_gimbal_data.Vision_l_yaw_tar + YAW_L_INIT_ANGLE;
@@ -303,17 +305,17 @@ static void ScanTargetL()
     time_T = DWT_GetTimeline_s();
     sint = arm_sin_f32(time_T);
 
-    if(time_T < 6)
-        vision_gimbal_data.Vision_set_l_yaw = (YAW_L_LIMIT_MIN + YAW_L_LIMIT_MAX) / 2;
+    // if(time_T < 6)
+    //     vision_gimbal_data.Vision_set_l_yaw = (YAW_L_LIMIT_MIN + YAW_L_LIMIT_MAX) / 2;
 
-    if(vision_recv_data_l.target_state == NO_TARGET && (time_T > 6));
+    if(vision_recv_data_l.target_state == NO_TARGET);
     {
         diff_time += time - last_time;
         if(diff_time > 1000)
         {   
 
             vision_gimbal_data.Vision_set_l_yaw = ((YAW_L_LIMIT_MIN + YAW_L_LIMIT_MAX) / 2) + (((YAW_L_LIMIT_MAX - YAW_L_LIMIT_MIN) / 2) * arm_sin_f32(time_T));
-            vision_gimbal_data.Vision_set_l_pitch = ((PITCH_L_LIMIT_MIN + PITCH_L_LIMIT_MAX) / 2) + (((PITCH_L_LIMIT_MAX - PITCH_L_LIMIT_MIN) / 2) * arm_sin_f32(time_T * 5));
+            vision_gimbal_data.Vision_set_l_pitch = ((PITCH_L_LIMIT_MIN + PITCH_L_LIMIT_MAX) / 2) + (((PITCH_L_LIMIT_MAX - PITCH_L_LIMIT_MIN) / 2) * arm_sin_f32(time_T * 7));
             
         }
 
@@ -339,17 +341,17 @@ static void ScanTargetR()
     time_T = DWT_GetTimeline_s();
     sint = arm_sin_f32(time_T);
     
-    if(time_T < 6)
-        vision_gimbal_data.Vision_set_r_yaw = (YAW_R_LIMIT_MIN + YAW_R_LIMIT_MAX) / 2;
+    // if(time_T < 6) 
+    //     vision_gimbal_data.Vision_set_r_yaw = (YAW_R_LIMIT_MIN + YAW_R_LIMIT_MAX) / 2;
 
 
-    if(vision_recv_data_r.target_state == NO_TARGET && (time_T > 6))
+    if(vision_recv_data_r.target_state == NO_TARGET)
     {
         diff_time += time - last_time;
         if(diff_time > 1000)
         {   
             vision_gimbal_data.Vision_set_r_yaw = ((YAW_R_LIMIT_MIN + YAW_R_LIMIT_MAX) / 2) + (((YAW_R_LIMIT_MAX - YAW_R_LIMIT_MIN) / 2) * arm_sin_f32(time_T / 1.5));
-            vision_gimbal_data.Vision_set_r_pitch = ((PITCH_R_LIMIT_MIN + PITCH_R_LIMIT_MAX) / 2) + (((PITCH_R_LIMIT_MIN - PITCH_R_LIMIT_MAX) / 2) * arm_sin_f32(time_T * 5));
+            vision_gimbal_data.Vision_set_r_pitch = ((PITCH_R_LIMIT_MIN + PITCH_R_LIMIT_MAX) / 2) + (((PITCH_R_LIMIT_MIN - PITCH_R_LIMIT_MAX) / 2) * arm_sin_f32(time_T * 8));
         }
     }
 
@@ -375,7 +377,7 @@ void GimbalTask()
     if(gimbal_cmd_recv.gimbal_mode == GIMBAL_VISION)
     {   
         vision_gimbal_data.Vision_l_yaw_tar = gimbal_cmd_recv.yaw1;
-        vision_gimbal_data.Vision_l_pitch_tar = gimbal_cmd_recv.pitch2;
+        vision_gimbal_data.Vision_l_pitch_tar = gimbal_cmd_recv.pitch1;
         vision_gimbal_data.yaw_r_motor_angle = yaw_l_motor->measure.total_angle;
         vision_gimbal_data.pitch_r_motor_angle = pitch_l_motor->measure.total_angle;
 
@@ -394,7 +396,7 @@ void GimbalTask()
 
     VisionAngleCalc();
 
-    // ScanTargetL();
+    ScanTargetL();
     ScanTargetR();
 
     VisionSetAltitude_L(vision_gimbal_data.Vision_l_yaw * DEGREE_2_RAD, vision_gimbal_data.Vision_l_pitch * DEGREE_2_RAD, 0);
@@ -413,16 +415,16 @@ void GimbalTask()
         break;
     // 使用陀螺仪的反馈,底盘根据yaw电机的offset跟随云台或视觉模式采用
     case GIMBAL_GYRO_MODE: // 后续只保留此模式
-        // DJIMotorEnable(yaw_l_motor);
-        // DJIMotorEnable(pitch_l_motor);
+        DJIMotorEnable(yaw_l_motor);
+        DJIMotorEnable(pitch_l_motor);
         // DJIMotorChangeFeed(yaw_l_motor, ANGLE_LOOP, OTHER_FEED);
         // DJIMotorChangeFeed(yaw_r_motor, ANGLE_LOOP, OTHER_FEED);
         // DJIMotorChangeFeed(pitch_l_motor, ANGLE_LOOP, OTHER_FEED);
         // DJIMotorChangeFeed(pitch_r_motor, ANGLE_LOOP, OTHER_FEED);
         // DJIMotorSetRef(yaw_l_motor, gimbal_cmd_recv.yaw); // yaw和pitch会在robot_cmd中处理好多圈和单圈
         // DJIMotorSetRef(pitch_l_motor, gimbal_cmd_recv.pitch);
-        DJIMotorStop(yaw_l_motor);
-        DJIMotorStop(pitch_l_motor);
+        // DJIMotorStop(yaw_l_motor);
+        // DJIMotorStop(pitch_l_motor);
         DJIMotorStop(yaw_r_motor);
         DJIMotorStop(pitch_r_motor);
         break;
@@ -447,14 +449,14 @@ void GimbalTask()
         break;
     // 云台自瞄模式，自瞄计算使用相对母云台角度，发送时转换为实际角度
     case GIMBAL_VISION: 
-        // DJIMotorEnable(yaw_l_motor);
-        // DJIMotorEnable(pitch_l_motor);
-        // DJIMotorEnable(yaw_r_motor);
-        // DJIMotorEnable(pitch_r_motor);
-        DJIMotorStop(yaw_l_motor);
-        DJIMotorStop(pitch_l_motor);
-        DJIMotorStop(yaw_r_motor);
-        DJIMotorStop(pitch_r_motor);
+        DJIMotorEnable(yaw_l_motor);
+        DJIMotorEnable(pitch_l_motor);
+        DJIMotorEnable(yaw_r_motor);
+        DJIMotorEnable(pitch_r_motor);
+        // DJIMotorStop(yaw_l_motor);
+        // DJIMotorStop(pitch_l_motor);
+        // DJIMotorStop(yaw_r_motor);
+        // DJIMotorStop(pitch_r_motor); 
         // DMMotorEnable(Gimbal_Base);
         DJIMotorChangeFeed(yaw_l_motor, ANGLE_LOOP, MOTOR_FEED);
         DJIMotorChangeFeed(yaw_r_motor, ANGLE_LOOP, MOTOR_FEED);
@@ -469,8 +471,8 @@ void GimbalTask()
 
         DJIMotorSetRef(yaw_r_motor, vision_gimbal_data.Vision_set_r_yaw);
         DJIMotorSetRef(pitch_r_motor, vision_gimbal_data.Vision_set_r_pitch);
-        // DJIMotorSetRef(yaw_l_motor, vision_gimbal_data.Vision_set_l_yaw);
-        // DJIMotorSetRef(pitch_l_motor, vision_gimbal_data.Vision_set_l_pitch);
+        DJIMotorSetRef(yaw_l_motor, vision_gimbal_data.Vision_set_l_yaw);
+        DJIMotorSetRef(pitch_l_motor, vision_gimbal_data.Vision_set_l_pitch);
         DMMotorSetRef (Gimbal_Base, gimbal_cmd_recv.gimbal_angle);
 
     default:

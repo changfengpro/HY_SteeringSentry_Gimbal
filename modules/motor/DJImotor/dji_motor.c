@@ -198,6 +198,7 @@ DJIMotorInstance *DJIMotorInit(Motor_Init_Config_s *config)
     // motor basic setting 电机基本设置
     instance->motor_type = config->motor_type;                         // 6020 or 2006 or 3508
     instance->motor_settings = config->controller_setting_init_config; // 正反转,闭环类型等
+    instance->motor_close_type = config->motor_close_type;
 
     // motor controller init 电机控制器初始化
     PIDInit(&instance->motor_controller.current_PID, &config->controller_param_init_config.current_PID);
@@ -298,7 +299,11 @@ void DJIMotorControl()
             if (motor_setting->angle_feedback_source == OTHER_FEED)
                 pid_measure = *motor_controller->other_angle_feedback_ptr;
             else
-                pid_measure = measure->total_angle; // MOTOR_FEED,对total angle闭环,防止在边界处出现突跃
+            {
+                if(motor->motor_close_type == SINGLE_ANGLE) pid_measure = measure->angle_single_round;
+                if(motor->motor_close_type == TOTAL_ANGLE)  pid_measure = measure->total_angle; // MOTOR_FEED,对total angle闭环,防止在边界处出现突跃
+            }
+               
             // 更新pid_ref进入下一个环
             pid_ref = PIDCalculate(&motor_controller->angle_PID, pid_measure, pid_ref);
         }

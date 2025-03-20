@@ -354,5 +354,6 @@ void RobotCMDTask()
 #endif // GIMBAL_BOARD
     PubPushMessage(shoot_cmd_pub, (void *)&shoot_cmd_send);
     PubPushMessage(gimbal_cmd_pub, (void *)&gimbal_cmd_send);
+    PubPushMessage(vision_recv_l_data_pub, (void *)vision_recv_data_l);
     PubPushMessage(vision_recv_r_data_pub, (void *)vision_recv_data_r);
 }
