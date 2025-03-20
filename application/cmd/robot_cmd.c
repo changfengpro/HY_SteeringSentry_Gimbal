@@ -60,8 +60,8 @@ BMI088_Data_t bmi088_data;
 void RobotCMDInit()
 {
     rc_data = RemoteControlInit(&huart5);   // 修改为对应串口,注意如果是自研板dbus协议串口需选用添加了反相器的那个
-    vision_recv_data_l = VisionLeftInit(&huart7); // 视觉通信串口
-    vision_recv_data_r = VisionInit(&huart1); // 视觉通信串口
+    vision_recv_data_l = VisionLeftInit(&huart1); // 视觉通信串口
+    vision_recv_data_r = VisionInit(&huart7); // 视觉通信串口
     radar_data = CmdVelControlInit(&huart8); // 导航控制
     referee_recv_data = RefereeDataTransportInit(&huart10);
     // radar_data = CmdVelControlInit(&huart1);
@@ -89,7 +89,8 @@ void RobotCMDInit()
     };
     cmd_can_comm = CANCommInit(&comm_conf);
 #endif // GIMBAL_BOARD
-    gimbal_cmd_send.pitch = 0;
+    gimbal_cmd_send.pitch1 = 0;
+    gimbal_cmd_send.pitch2 = 0;
 
     robot_state = ROBOT_READY; // 启动时机器人进入工作模式,后续加入所有应用初始化完成之后再进入
 }
@@ -150,9 +151,9 @@ static void RemoteControlSet()
     if (switch_is_down(rc_data[TEMP].rc.switch_left) || vision_recv_data_r->target_state == NO_TARGET)
     { // 按照摇杆的输出大小进行角度增量,增益系数需调整
         
-        gimbal_cmd_send.yaw += 0.002f * (float)rc_data[TEMP].rc.rocker_l_;
-        gimbal_cmd_send.pitch += 0.0005f * (float)rc_data[TEMP].rc.rocker_l1;
-        LIMIT_MIN_MAX(gimbal_cmd_send.pitch,PITCH_L_SEND_MIN,PITCH_L_SEND_MAX); // 限位
+        // gimbal_cmd_send.yaw += 0.002f * (float)rc_data[TEMP].rc.rocker_l_;
+        // gimbal_cmd_send.pitch += 0.0005f * (float)rc_data[TEMP].rc.rocker_l1;
+        // LIMIT_MIN_MAX(gimbal_cmd_send.pitch,PITCH_L_SEND_MIN,PITCH_L_SEND_MAX); // 限位
     }
     // 云台软件限位
 
@@ -187,8 +188,10 @@ static void RemoteControlSet()
 static void VisionRadaControlSet()
 {
     gimbal_cmd_send.gimbal_mode = GIMBAL_VISION;    //云台自瞄模式
-    gimbal_cmd_send.yaw = vision_recv_data_r->yaw;
-    gimbal_cmd_send.pitch = vision_recv_data_r->pitch;
+    gimbal_cmd_send.yaw1 = vision_recv_data_l->yaw;
+    gimbal_cmd_send.pitch1 = vision_recv_data_l->pitch;
+    gimbal_cmd_send.yaw2 = vision_recv_data_r->yaw;
+    gimbal_cmd_send.pitch2 = vision_recv_data_r->pitch;
     if(vision_recv_data_r->fire_mode == NO_FIRE)  shoot_cmd_send.friction_mode = FRICTION_OFF;
     if(vision_recv_data_r->fire_mode == AUTO_FIRE) shoot_cmd_send.friction_mode = FRICTION_ON;
     shoot_cmd_send.shoot_rate = 10;
@@ -204,8 +207,8 @@ static void MouseKeySet()
     chassis_cmd_send.vx = rc_data[TEMP].key[KEY_PRESS].w * 300 - rc_data[TEMP].key[KEY_PRESS].s * 300; // 系数待测
     chassis_cmd_send.vy = rc_data[TEMP].key[KEY_PRESS].s * 300 - rc_data[TEMP].key[KEY_PRESS].d * 300;
 
-    gimbal_cmd_send.yaw += (float)rc_data[TEMP].mouse.x / 660 * 10; // 系数待测
-    gimbal_cmd_send.pitch += (float)rc_data[TEMP].mouse.y / 660 * 10;
+    // gimbal_cmd_send.yaw += (float)rc_data[TEMP].mouse.x / 660 * 10; // 系数待测
+    // gimbal_cmd_send.pitch += (float)rc_data[TEMP].mouse.y / 660 * 10;
 
     switch (rc_data[TEMP].key_count[KEY_PRESS][Key_Z] % 3) // Z键设置弹速
     {
@@ -323,6 +326,7 @@ void RobotCMDTask()
     SubGetMessage(gimbal_feed_sub, &gimbal_fetch_data);
 
     VisionTrajectory();
+    Visiontrajectory_l();
     // 根据gimbal的反馈值计算云台和底盘正方向的夹角,不需要传参,通过static私有变量完成
     CalcOffsetAngle();
     // 根据遥控器左侧开关,确定当前使用的控制模式为遥控器调试还是键鼠

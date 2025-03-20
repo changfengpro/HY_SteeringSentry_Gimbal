@@ -166,8 +166,10 @@ typedef struct
 // cmd发布的云台控制数据,由gimbal订阅
 typedef struct
 { // 云台角度控制
-    float yaw;
-    float pitch;
+    float yaw1;
+    float pitch1;
+    float yaw2;
+    float pitch2;
     float chassis_rotate_wz;
     float gimbal_angle; //母云台角度
 

@@ -374,13 +374,13 @@ void GimbalTask()
     temp_statue = gimbal_cmd_recv.gimbal_mode;
     if(gimbal_cmd_recv.gimbal_mode == GIMBAL_VISION)
     {   
-        vision_gimbal_data.Vision_l_yaw_tar = gimbal_cmd_recv.yaw;
-        vision_gimbal_data.Vision_l_pitch_tar = gimbal_cmd_recv.pitch;
+        vision_gimbal_data.Vision_l_yaw_tar = gimbal_cmd_recv.yaw1;
+        vision_gimbal_data.Vision_l_pitch_tar = gimbal_cmd_recv.pitch2;
         vision_gimbal_data.yaw_r_motor_angle = yaw_l_motor->measure.total_angle;
         vision_gimbal_data.pitch_r_motor_angle = pitch_l_motor->measure.total_angle;
 
-        vision_gimbal_data.Vision_r_yaw_tar = gimbal_cmd_recv.yaw;
-        vision_gimbal_data.Vision_r_pitch_tar = gimbal_cmd_recv.pitch;
+        vision_gimbal_data.Vision_r_yaw_tar = gimbal_cmd_recv.yaw2;
+        vision_gimbal_data.Vision_r_pitch_tar = gimbal_cmd_recv.pitch2;
         vision_gimbal_data.yaw_r_motor_angle = yaw_r_motor->measure.total_angle;
         vision_gimbal_data.pitch_r_motor_angle = pitch_r_motor->measure.total_angle;
 

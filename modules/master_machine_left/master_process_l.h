@@ -123,6 +123,6 @@ void VisionSetFlag_L(Enemy_Color_e enemy_color, Work_Mode_e work_mode, Bullet_Sp
  */
 void VisionSetAltitude_L(float yaw, float pitch, float roll);
 
-void VisionTrajectory_L();
+void Visiontrajectory_l();
 
 #endif // !MASTER_PROCESS_H
