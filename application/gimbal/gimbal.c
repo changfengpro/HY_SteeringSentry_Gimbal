@@ -6,6 +6,8 @@
 #include "message_center.h"
 #include "master_process.h"
 #include "master_process_l.h"
+#include "rm_referee.h"
+#include "referee_transport.h"
 #include "general_def.h"
 #include "bmi088.h"
 #include "bsp_dwt.h"
@@ -45,6 +47,7 @@ static Gimbal_Upload_Data_s gimbal_feedback_data; // 回传给cmd的云台状态
 static Gimbal_Ctrl_Cmd_s gimbal_cmd_recv;         // 来自cmd的控制信息
 static Vision_Gimbal_Data_s vision_gimbal_data; // 自瞄时云台数据(为方便计算，定义了相对角度)
 static Vision_Recv_s vision_recv_data_l, vision_recv_data_r;
+static referee_info_t *referee_recv_data;
 static float Yaw_single_angle, Yaw_angle_sum;
 // static BMI088Instance *bmi088; // 云台IMU
 
@@ -52,7 +55,7 @@ static float Yaw_single_angle, Yaw_angle_sum;
 void GimbalInit()
 {   
     float gimbal_base_angle_feed_ptr = gimbal_IMU_data->YawTotalAngle;
-
+    referee_recv_data = referee_ptr();
     gimbal_IMU_data = INS_ptr();
 
     // YAW
@@ -403,6 +406,9 @@ void GimbalTask()
     VisionSetAltitude(vision_gimbal_data.Vision_r_yaw * DEGREE_2_RAD, vision_gimbal_data.Vision_r_pitch * DEGREE_2_RAD, 0);
     // @todo:现在已不再需要电机反馈,实际上可以始终使用IMU的姿态数据来作为云台的反馈,yaw电机的offset只是用来跟随底盘
     // 根据控制模式进行电机反馈切换和过渡,视觉模式在robot_cmd模块就已经设置好,gimbal只看yaw_ref和pitch_ref
+
+    if(referee_recv_data->RFID_data == 1) Gimbal_Base->motor_settings.angle_feedback_source = OTHER_FEED;
+
     switch (gimbal_cmd_recv.gimbal_mode)
     {
     // 停止

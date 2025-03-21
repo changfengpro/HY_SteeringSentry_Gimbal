@@ -196,8 +196,8 @@ static void VisionRadaControlSet()
     gimbal_cmd_send.pitch2 = vision_recv_data_r->pitch;
     if(vision_recv_data_r->fire_mode == NO_FIRE)  shoot_cmd_send_r.friction_mode = FRICTION_OFF;
     if(vision_recv_data_r->fire_mode == AUTO_FIRE) shoot_cmd_send_r.friction_mode = FRICTION_ON;
-    shoot_cmd_send_l.shoot_rate = 10;
-    shoot_cmd_send_r.shoot_rate = 10;
+    shoot_cmd_send_l.shoot_rate = 8;
+    shoot_cmd_send_r.shoot_rate = 8;
     
 }
 

@@ -36,6 +36,7 @@
         "master_process_l.h": "c",
         "daemon.h": "c",
         "referee_transport.h": "c",
-        "general_def.h": "c"
+        "general_def.h": "c",
+        "master_process.h": "c"
     }
 }
