@@ -378,8 +378,8 @@ void GimbalTask()
     {   
         vision_gimbal_data.Vision_l_yaw_tar = gimbal_cmd_recv.yaw1;
         vision_gimbal_data.Vision_l_pitch_tar = gimbal_cmd_recv.pitch1;
-        vision_gimbal_data.yaw_r_motor_angle = yaw_l_motor->measure.angle_single_round;
-        vision_gimbal_data.pitch_r_motor_angle = pitch_l_motor->measure.total_angle;
+        vision_gimbal_data.yaw_l_motor_angle = yaw_l_motor->measure.angle_single_round;
+        vision_gimbal_data.pitch_l_motor_angle = pitch_l_motor->measure.total_angle;
 
         vision_gimbal_data.Vision_r_yaw_tar = gimbal_cmd_recv.yaw2 + 2.0f;
         vision_gimbal_data.Vision_r_pitch_tar = gimbal_cmd_recv.pitch2;

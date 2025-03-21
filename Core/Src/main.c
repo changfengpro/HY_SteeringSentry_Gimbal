@@ -124,6 +124,7 @@ int main(void)
   MX_UART9_Init();
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
+  HAL_Delay(2000);
   RobotInit(); // Ψһ�ĳ�ʼ������
   LOGINFO("[main] SystemInit() and RobotInit() done");
   /* USER CODE END 2 */

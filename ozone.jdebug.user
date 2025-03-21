@@ -1,12 +1,13 @@
 
 
 
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:275:5, State=BP_STATE_DISABLED
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:335:1, State=BP_STATE_DISABLED
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:408:9, State=BP_STATE_DISABLED
-Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:424:9, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:277:5, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:337:1, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:410:9, State=BP_STATE_DISABLED
+Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c:428:9, State=BP_STATE_DISABLED
 Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/cmd_vel/cmd_vel.c:65, State=BP_STATE_DISABLED
 Breakpoint=/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/cmd_vel/cmd_vel.c:70:9, State=BP_STATE_DISABLED
+OpenDocument="usart.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/Core/Src/usart.c", Line=135
 OpenDocument="referee_transport.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/referee_transport/referee_transport.c", Line=51
 OpenDocument="master_process.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/modules/master_machine/master_process.c", Line=57
 OpenDocument="main.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/Core/Src/main.c", Line=71
@@ -16,13 +17,13 @@ OpenDocument="cmd_vel.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimb
 OpenDocument="bsp_dwt.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/bsp/dwt/bsp_dwt.c", Line=86
 OpenDocument="gimbal.c", FilePath="/home/rmer/STM/HY_SteeringSentry/sentry_gimbal_H7/application/gimbal/gimbal.c", Line=230
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=0, w=601, h=184, TabPos=1, TopOfStack=0, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=508, h=351, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=601, h=184, TabPos=0, TopOfStack=1, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=0, w=601, h=197, TabPos=1, TopOfStack=0, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=508, h=350, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=601, h=197, TabPos=0, TopOfStack=1, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Memory 1", DockArea=BOTTOM, x=2, y=0, w=670, h=269, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x240043E7
-OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=1, w=508, h=314, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=1, w=508, h=315, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Data Sampling", DockArea=BOTTOM, x=1, y=0, w=706, h=269, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=RIGHT, x=0, y=1, w=601, h=464, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="179;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="416;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="391;0"
+OpenWindow="Timeline", DockArea=RIGHT, x=0, y=1, w=601, h=451, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="179;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="416;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="391;0"
 OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=462, h=269, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
 TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[100;100;100;100;100;101]

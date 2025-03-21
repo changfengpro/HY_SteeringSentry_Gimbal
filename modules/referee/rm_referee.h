@@ -42,7 +42,7 @@ typedef struct
 
 	// 自定义交互数据的接收
 	Communicate_ReceiveData_t ReceiveData;
-
+	uint32_t RFID_data;	
 	uint8_t init_flag;
 
 } referee_info_t;

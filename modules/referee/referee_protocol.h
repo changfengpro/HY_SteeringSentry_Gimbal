@@ -82,6 +82,7 @@ typedef enum
 	ID_aerial_robot_energy = 0x0205,	   // 空中机器人能量状态数据
 	ID_robot_hurt = 0x0206,				   // 伤害状态数据
 	ID_shoot_data = 0x0207,				   // 实时射击数据
+	ID_RFID = 0x0209,					   // RFID数据
 	ID_student_interactive = 0x0301,	   // 机器人间交互数据
 } CmdID_e;
 
@@ -100,6 +101,7 @@ typedef enum
 	LEN_aerial_robot_energy = 2,				 // 0x0205
 	LEN_robot_hurt = 1,							 // 0x0206
 	LEN_shoot_data = 7,							 // 0x0207
+	LEN_RFID = 4,								 // 0x0209
 	LEN_receive_data = 6 + Communicate_Data_LEN, // 0x0301
 
 } JudgeDataLength_e;

@@ -5,7 +5,7 @@
  * @version: 
  * @Date: 2025-03-13 06:34:23
  * @LastEditors:  
- * @LastEditTime: 2025-03-18 17:36:37
+ * @LastEditTime: 2025-03-21 13:37:51
  */
 #include "referee_transport.h"
 
@@ -29,7 +29,7 @@ static DaemonInstance *referee_data_daemo_instance; // 裁判系统数据转发�
  */
 static void RefereeDataParse(const uint8_t *referee_data_buf)
 {   
-    if(referee_data_buf[0] != START_BYTE || referee_data_buf[150] != END_BYTE)
+    if(referee_data_buf[0] != START_BYTE || referee_data_buf[154] != END_BYTE)
     {
         LOGWARNING("[referee] Packet format error");
         return;
@@ -37,14 +37,16 @@ static void RefereeDataParse(const uint8_t *referee_data_buf)
 
     // 计算校验和（前149字节）
     uint8_t checksum = 0;
-    for(int i =0; i < 149; i++)
+
+    for(int i =0; i < 153; i++)
     {
         checksum ^= referee_data_buf[i];
     }
 
-    if(checksum == referee_data_buf[149])   // 校验正确
+    if(checksum == referee_data_buf[153])   // 校验正确
     {
         memcpy(&referee_data, &referee_data_buf[1], REFEREE_DATA_CONTROL_FRAME_SIZE);
+        referee_data.RFID_data = referee_data_buf[152];
     }
 }
 
