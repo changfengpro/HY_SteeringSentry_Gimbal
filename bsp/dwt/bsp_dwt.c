@@ -28,6 +28,7 @@ static uint64_t CYCCNT64;
 static void DWT_CNT_Update(void)
 {
     static volatile uint8_t bit_locker = 0;
+    osThreadSuspendAll();  // 关闭调度器
     if (!bit_locker)
     {
         bit_locker = 1;
@@ -38,6 +39,7 @@ static void DWT_CNT_Update(void)
         CYCCNT_LAST = DWT->CYCCNT;
         bit_locker = 0;
     }
+    osThreadResumeAll(); // 打开调度器
 }
 
 void DWT_Init(uint32_t CPU_Freq_mHz)
